@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+<flow name="geoserver-shapefile-Flow" doc:description="{
+	url = &quot;file:///tmp/testshp.shp&quot;,
+	datastoreName = &quot;testshp&quot;,
+	featuretypeName = &quot;testshp&quot;,
+	workspaceName = &quot;wsTest&quot;
+}
+
+java.util.Map" processingStrategy="synchronous">
+        <logger message="Started Geoserver Shape" level="INFO" doc:name="Started Geoserver Shape"/>
+        <set-variable variableName="workspaceName" value="#[payload.get(&quot;workspaceName&quot;)]" doc:name="workspaceName"/>
+        <set-variable variableName="url" value="#[payload.get(&quot;url&quot;)]" doc:name="url"/>
+        <set-variable variableName="datastoreName" value="#[payload.get(&quot;datastoreName&quot;)]" doc:name="datastoreName"/>
+        <set-variable variableName="featuretypeName" value="#[payload.get(&quot;featuretypeName&quot;)]" doc:name="featuretypeName"/>
+        <set-payload value="{&quot;dataStore&quot;:{&quot;name&quot;:&quot;#[datastoreName]&quot;,&quot;type&quot;:&quot;Shapefile&quot;,&quot;enabled&quot;:true,&quot;connectionParameters&quot;:{&quot;entry&quot;:[{&quot;@key&quot;:&quot;url&quot;,&quot;$&quot;:&quot;#[url]&quot;},{&quot;@key&quot;:&quot;fstype&quot;,&quot;$&quot;:&quot;shape&quot;},{&quot;@key&quot;:&quot;create spatial index&quot;,&quot;$&quot;:&quot;true&quot;},{&quot;@key&quot;:&quot;filetype&quot;,&quot;$&quot;:&quot;shapefile&quot;},{&quot;@key&quot;:&quot;enable spatial index&quot;,&quot;$&quot;:&quot;true&quot;},{&quot;@key&quot;:&quot;cache and reuse memory maps&quot;,&quot;$&quot;:&quot;true&quot;}]}}}" doc:name="Create datastore"/>
+        <logger message="Create datastore request, sending #[payload] to http://${geoserver.host}:${geoserver.port}/${geoserver.basepath}workspaces/#[workspaceName]/datastores" level="INFO" doc:name="Create datastore request"/>
+        <message-properties-transformer doc:name="Add Content-Type Header" >
+            <add-message-property key="content-type" value="application/json"/>
+        </message-properties-transformer>
+        <http:request config-ref="HTTP_Geoserver_Request" path="workspaces/#[workspaceName]/datastores" method="POST" doc:name="Create datastore">
+        </http:request>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <logger message="DataStore creation: (#[message.inboundProperties[&quot;http.status&quot;]]) #[payload]" level="INFO" doc:name="DataStore creation END"/>
+        <logger message="Featuretype creation START" level="INFO" doc:name="Featuretype creation START"/>
+        <set-payload value="{&quot;featureType&quot;:{&quot;name&quot;:&quot;#[featuretypeName]&quot;,&quot;nativeName&quot;:&quot;#[featuretypeName]&quot;,&quot;title&quot;:&quot;#[featuretypeName]&quot;}}" doc:name="Create featuretype"/>
+        <logger message="Create featuretype request, sending #[payload] to http://${geoserver.host}:${geoserver.port}/${geoserver.basepath}workspaces/#[workspaceName]/datastores/#[datastoreName]/featuretypes" level="INFO" doc:name="Create featuretype request"/>
+        <message-properties-transformer doc:name="Add Content-Type Header" >
+            <add-message-property key="content-type" value="application/json"/>
+        </message-properties-transformer>
+        <http:request config-ref="HTTP_Geoserver_Request" path="workspaces/#[workspaceName]/datastores/#[datastoreName]/featuretypes" method="POST" doc:name="Create featuretype">
+            <http:failure-status-code-validator values="401"/>
+        </http:request>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <logger message="FeatureType creation: (#[message.inboundProperties[&quot;http.status&quot;]]) #[payload]" level="INFO" doc:name="FeatureType creation"/>
+    </flow>
+    
+ </mule>

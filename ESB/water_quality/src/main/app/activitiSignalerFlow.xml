@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <flow name="activitiSignalerFlow" doc:description="{
+	&quot;executionId&quot; : &quot;#[executionId]&quot;,
+	&quot;signalName&quot; : &quot;sig_name&quot;,
+	&quot;vars&quot; : {
+		&quot;varname1&quot; : &quot;value1&quot;,
+		&quot;varname2&quot; : &quot;value2&quot;,
+		...
+	}
+}
+
+type is JSON">
+
+		        <logger level="INFO" doc:name="Started activitiSignalerFlow" message="Started activitiSignalerFlow with #[payload]"/>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to HashMap"/>
+        <set-variable variableName="activitiSignalBody" value="#[new java.util.HashMap()]" doc:name="activitiSignalBody"/>
+        <set-variable variableName="variables" value="#[new java.util.ArrayList()]" doc:name="variables as ArrayList"/>
+        <expression-component doc:name="Init activitiSignalBody"><![CDATA[activitiSignalBody.put("action", "signalEventReceived");
+activitiSignalBody.put("signalName", payload.get("signalName") );
+activitiSignalBody.put("variables", variables );
+]]></expression-component>
+        <foreach collection="payload.get(&quot;vars&quot;).entrySet()" doc:name="For Each var in vars">
+            <expression-component doc:name="Add var to variables ArrayList"><![CDATA[java.util.HashMap thisVariable = new java.util.HashMap();
+thisVariable.put("name", payload.key);
+thisVariable.put("value", payload.value);
+
+variables.add(thisVariable);
+
+]]></expression-component>
+        </foreach>
+        <http:request config-ref="HTTP_Request_Activiti" path="runtime/executions/?signalEventSubscriptionName=#[payload.get(&quot;signalName&quot;)]&amp;processInstanceId=#[payload.get(&quot;executionId&quot;)]" method="GET" doc:name="Get Activiti SignalCatcher execId"/>
+        <set-variable variableName="signalExecId" value="#[json:data[0]/id]" doc:name="signalExecId"/>
+        <set-payload value="#[activitiSignalBody]" doc:name="Set Payload to activitiSignalBody"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <logger message="Activiti req: #[payload] to &lt;runtime/executions/#[signalExecId]&gt;" level="INFO" doc:name="Activiti req"/>
+        <http:request config-ref="HTTP_Request_Activiti" path="runtime/executions/#[signalExecId]" method="PUT" doc:name="Activiti Signal">
+            <http:request-builder>
+                <http:header headerName="Content-Type" value="application/json"/>
+            </http:request-builder>
+        </http:request>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <logger message="Activiti resp code: #[message.inboundProperties[&quot;http.status&quot;]]" level="INFO" doc:name="Activiti resp"/>
+        <remove-variable variableName="signalExecId" doc:name="Remove signalExecId"/>
+        <remove-variable variableName="activitiSignalBody" doc:name="Remove activitiSignalBody"/>
+    </flow>
+</mule>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <signal id="test_signal_modis" name="test_signal_modis"></signal>
+  <signal id="test_signal_twq" name="test_signal_twq"></signal>
+  <message id="modis_new" name="modis_new"></message>
+  <process id="WQM-Saimon" name="Water Quality (Modis) for Saimon" isExecutable="true">
+    <startEvent id="startevent1" name="Start" activiti:initiator="initiator">
+      <extensionElements>
+        <activiti:formProperty id="start_date_Modis" name="start_date_Modis" type="date" variable="WQM_startDate" required="true"></activiti:formProperty>
+        <activiti:formProperty id="end_date_Modis" name="end_date_Modis" type="date" variable="WQM_endDate" required="true"></activiti:formProperty>
+      </extensionElements>
+    </startEvent>
+    <sequenceFlow id="flow3" sourceRef="startevent1" targetRef="scripttask1"></sequenceFlow>
+    <scriptTask id="scripttask1" name="Fetch Input Modis Metadata and Call Modis Processor" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+
+def executionID = execution.id;
+
+def sd = "${WQM_startDate}" ;
+def ed = "${WQM_endDate}";
+
+def jsonBuilder = new groovy.json.JsonBuilder();
+
+jsonBuilder(
+    executionId: executionID,
+    signalName: signalWQM,
+    args: {
+    gte sd
+    lte  ed
+  }
+)
+println(jsonBuilder.toPrettyString());
+
+Client c = Client.create();
+WebResource r = c.resource(endpointWQM);
+def resp = r.post(String.class, jsonBuilder.toPrettyString());
+
+execution.setVariable("resp",resp);
+def last_update = new Date()
+execution.setVariable("last_update",last_update);</script>
+    </scriptTask>
+    <intermediateCatchEvent id="signalintermediatecatchevent1" name="SignalCatchEvent">
+      <signalEventDefinition signalRef="test_signal_modis"></signalEventDefinition>
+    </intermediateCatchEvent>
+    <sequenceFlow id="flow4" sourceRef="scripttask1" targetRef="signalintermediatecatchevent1"></sequenceFlow>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow15" sourceRef="signalintermediatecatchevent1" targetRef="exclusivegateway3"></sequenceFlow>
+    <userTask id="usertask4" name="Modis Processor Error" activiti:assignee="${initiator}">
+      <documentation>An error occurred while sending your request to the Modis Water Quality processor.
+The error is reported below:
+${error}</documentation>
+    </userTask>
+    <sequenceFlow id="flow17" name="result == -1" sourceRef="exclusivegateway3" targetRef="usertask4">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result == '-1'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow18" sourceRef="usertask4" targetRef="endevent2"></sequenceFlow>
+    <sequenceFlow id="flow19" name="result != -1" sourceRef="exclusivegateway3" targetRef="endevent2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result != '-1'}]]></conditionExpression>
+    </sequenceFlow>
+    <dataObject id="endpointWQM" name="endpointWQM" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>http://tebe.planetek.it:9190/wqmodis</activiti:value>
+      </extensionElements>
+    </dataObject>
+    <dataObject id="signalWQM" name="signalWQM" itemSubjectRef="xsd:string">
+      <extensionElements>
+        <activiti:value>test_signal_modis</activiti:value>
+      </extensionElements>
+    </dataObject>
+    <textAnnotation id="textannotation1">
+      <text>The process starts (without human trigger) when new Modis acquisitions are detected (typically on a daily basis)</text>
+    </textAnnotation>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_WQM-Saimon">
+    <bpmndi:BPMNPlane bpmnElement="WQM-Saimon" id="BPMNPlane_WQM-Saimon">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="6.0" y="184.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask1" id="BPMNShape_scripttask1">
+        <omgdc:Bounds height="81.0" width="105.0" x="76.0" y="161.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="signalintermediatecatchevent1" id="BPMNShape_signalintermediatecatchevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="220.0" y="184.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="590.0" y="277.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway3" id="BPMNShape_exclusivegateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="300.0" y="181.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask4" id="BPMNShape_usertask4">
+        <omgdc:Bounds height="70.0" width="105.0" x="410.0" y="363.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="textannotation1" id="BPMNShape_textannotation1">
+        <omgdc:Bounds height="90.0" width="141.0" x="40.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="41.0" y="201.0"></omgdi:waypoint>
+        <omgdi:waypoint x="76.0" y="201.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="181.0" y="201.0"></omgdi:waypoint>
+        <omgdi:waypoint x="220.0" y="201.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="255.0" y="201.0"></omgdi:waypoint>
+        <omgdi:waypoint x="300.0" y="201.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="320.0" y="221.0"></omgdi:waypoint>
+        <omgdi:waypoint x="320.0" y="397.0"></omgdi:waypoint>
+        <omgdi:waypoint x="410.0" y="398.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="55.0" x="330.0" y="287.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
+        <omgdi:waypoint x="515.0" y="398.0"></omgdi:waypoint>
+        <omgdi:waypoint x="607.0" y="397.0"></omgdi:waypoint>
+        <omgdi:waypoint x="607.0" y="312.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
+        <omgdi:waypoint x="320.0" y="181.0"></omgdi:waypoint>
+        <omgdi:waypoint x="319.0" y="124.0"></omgdi:waypoint>
+        <omgdi:waypoint x="607.0" y="124.0"></omgdi:waypoint>
+        <omgdi:waypoint x="607.0" y="277.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="51.0" x="341.0" y="149.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

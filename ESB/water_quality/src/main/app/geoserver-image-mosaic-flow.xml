@@ -8,6 +8,10 @@
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
+	<http:request-config name="HTTP_Geoserver_Request" host="${geoserver.host}" port="${geoserver.port}" basePath="${geoserver.basepath}" doc:name="HTTP Request Configuration">
+        <http:basic-authentication username="${geoserver.usr}" password="${geoserver.pwd}"/>
+    </http:request-config>
+    
 <flow name="geoserverImageMosaicFlow" doc:description="{
 	url = &quot;/tmp/test&quot;,
 	coveragestoreName = &quot;coveragestoreTest&quot;,

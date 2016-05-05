@@ -6,8 +6,8 @@
 	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:spring="http://www.springframework.org/schema/beans" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="
-http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+	xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
@@ -136,32 +136,32 @@ result = [filename for filename in os.listdir(wqModisOutLocalDir) if filename[0:
         </scripting:component>
         <foreach doc:name="For Each">
                 	<set-variable variableName="fileName" value="#[payload]" doc:name="fileName"/>
-            <set-variable variableName="coverageName" value="#[fileName.substring( 0, fileName.lastIndexOf(&quot;.&quot;) )]" doc:name="coverageName"/>
+            <set-variable variableName="noextFileName" value="#[fileName.substring( 0, fileName.lastIndexOf(&quot;.&quot;) )]" doc:name="noextFileName"/>
+            <set-variable variableName="coverageName" value="#[noextFileName.split(&quot;_&quot;)[1].toUpperCase()]" doc:name="coverageName"/>
             <set-variable variableName="workspaceName" value="${geoserver.workspace}" doc:name="workspaceName"/>
             
             <logger message="Load file in Geoserver: #[fileName]" level="INFO" doc:name="Load file in Geoserver"/>
        		<expression-component doc:name="Set payload geoserverReq HashMap"><![CDATA[payload = new java.util.HashMap();
-payload.put("coverageName", coverageName );
 payload.put("coveragestoreName", coverageName );
-payload.put("url", wqModisOutLocalDir+fileName );
+payload.put("url", "file://"+wqModisOutLocalDir+fileName );
 payload.put("workspaceName", workspaceName);
 return payload;
 ]]></expression-component>
         	<logger message="Call Geoserver flow with #[payload]" level="INFO" doc:name="Call Geoserver flow"/>
-        	<flow-ref name="geoserverFlow" doc:name="geoserverFlow"/>
+        	<flow-ref name="geoserverImageMosaicFlow" doc:name="geoserverImageMosaicFlow"/>
             
             
              <logger message="Prepare metadata for Geonetwork for #[fileName]" level="INFO" doc:name="Prepare metadata for Geonetwork"/>
-            <set-variable variableName="Prod_Type" value="#[new org.mule.module.json.JsonData('${wqmodistwq.prodtype}').get(coverageName.split(&quot;_&quot;)[2]).toString()]" doc:name="Prod_Type"/>
-            <set-variable variableName="Par_Type" value="#[new org.mule.module.json.JsonData('${wqmodistwq.partype}').get(coverageName.split(&quot;_&quot;)[1]).toString()]" doc:name="Par_Type"/>
+            <set-variable variableName="Prod_Type" value="#[new org.mule.module.json.JsonData('${wqmodis.prodtype}').get(noextFileName.split(&quot;_&quot;)[2]).toString()]" doc:name="Prod_Type"/>
+            <set-variable variableName="Par_Type" value="#[new org.mule.module.json.JsonData('${wqmodis.partype}').get(noextFileName.split(&quot;_&quot;)[1]).toString()]" doc:name="Par_Type"/>
             <set-variable variableName="Res" value="#[Prod_Type.contains(&quot;Improved&quot;) ? &quot;&amp;lt;100m&quot; : &quot;1km&quot;]" doc:name="Res"/>
             <set-variable variableName="Res_Denominator" value="#[Prod_Type.contains(&quot;Improved&quot;) ? 1000000 : 10000000]" doc:name="Res_Denominator"/>
             <set-variable variableName="Improve_Flag" value="#[Prod_Type.contains(&quot;Improved&quot;) ? &quot; improved with the fusion of on site measurements from Tracking Water Quality devices&quot; : &quot;&quot;]" doc:name="Improve_Flag"/>
             <set-variable variableName="Processing_Type" value="modis" doc:name="Processing_Type"/>
             <set-variable variableName="Publication_Date" value="#[ new java.text.SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ss&quot;).format(new java.util.Date())]" doc:name="Publication_Date"/>
             <set-variable variableName="Creation_Date" value="#[Publication_Date]" doc:name="Creation_Date"/>
-            <set-variable variableName="Temporal_Extent" value="#[new org.mule.el.datetime.DateTime(coverageName.split(&quot;_&quot;)[0], &quot;'A'yyyyDDDHHmmss&quot;).format(&quot;yyyy-MM-dd'T'HH:mm:ss&quot;) ]" doc:name="Temporal_Extent"/>
-            <logger message="Temp_Extent: #[Temporal_Extent] from #[coverageName.split(&quot;_&quot;)[0]]" level="INFO" doc:name="Temp_Extent"/>
+            <set-variable variableName="Temporal_Extent" value="#[new org.mule.el.datetime.DateTime(noextFileName.split(&quot;_&quot;)[0], &quot;'A'yyyyDDDHHmmss&quot;).format(&quot;yyyy-MM-dd'T'HH:mm:ss&quot;) ]" doc:name="Temporal_Extent"/>
+            <logger message="Temp_Extent: #[Temporal_Extent] from #[noextFileName.split(&quot;_&quot;)[0]]" level="INFO" doc:name="Temp_Extent"/>
             <set-variable variableName="geoserverPublic" value="${geoserver.public}" doc:name="geoserverPublic"/>
             
             

@@ -100,7 +100,7 @@
          <gmd:citation>
             <gmd:CI_Citation>
                <gmd:title>
-                  <gco:CharacterString>#[Prod_Type] map of #[Par_Type] over ICWM AOI at #[Res], calculated for: #[Temporal_Extent]</gco:CharacterString>
+                  <gco:CharacterString>#[Prod_Type] map of #[Par_Type] at #[Res], calculated for: #[Temporal_Extent]</gco:CharacterString>
                </gmd:title>
                <gmd:date>
                   <gmd:CI_Date>
@@ -134,7 +134,7 @@
             </gmd:CI_Citation>
          </gmd:citation>
          <gmd:abstract>
-            <gco:CharacterString>#[Prod_Type] map of #[Par_Type] over ICWM Area of Interest, calculated for day #[Temporal_Extent]#[Improve_flag].</gco:CharacterString>
+            <gco:CharacterString>#[Prod_Type] map of #[Par_Type], calculated for day #[Temporal_Extent].</gco:CharacterString>
          </gmd:abstract>
          <gmd:purpose gco:nilReason="missing">
             <gco:CharacterString/>
@@ -292,10 +292,26 @@
                         <gco:CharacterString>OGC:WMS</gco:CharacterString>
                      </gmd:protocol>
                      <gmd:name>
-                        <gco:CharacterString>#[coverageName]</gco:CharacterString>
+                        <gco:CharacterString>#[noextFileName]</gco:CharacterString>
                      </gmd:name>
                      <gmd:description gco:nilReason="missing">
                         <gco:CharacterString/>
+                     </gmd:description>
+                  </gmd:CI_OnlineResource>
+               </gmd:onLine>
+               <gmd:onLine>
+                  <gmd:CI_OnlineResource>
+                     <gmd:linkage>
+                        <gmd:URL>#[Prod_Download]</gmd:URL>
+                     </gmd:linkage>
+                     <gmd:protocol>
+                        <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
+                     </gmd:protocol>
+                     <gmd:name>
+                        <gmx:MimeFileType xmlns:gmx="http://www.isotc211.org/2005/gmx" type="application/zip">#[noextFileName]</gmx:MimeFileType>
+                     </gmd:name>
+                     <gmd:description>
+                        <gco:CharacterString>#[noextFileName]</gco:CharacterString>
                      </gmd:description>
                   </gmd:CI_OnlineResource>
                </gmd:onLine>

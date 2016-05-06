@@ -139,16 +139,28 @@ result = [filename for filename in os.listdir(wqModisOutLocalDir) if filename[0:
             <set-variable variableName="noextFileName" value="#[fileName.substring( 0, fileName.lastIndexOf(&quot;.&quot;) )]" doc:name="noextFileName"/>
             <set-variable variableName="coverageName" value="#[noextFileName.split(&quot;_&quot;)[1].toUpperCase()]" doc:name="coverageName"/>
             <set-variable variableName="workspaceName" value="${geoserver.workspace}" doc:name="workspaceName"/>
-            
-            <logger message="Load file in Geoserver: #[fileName]" level="INFO" doc:name="Load file in Geoserver"/>
-       		<expression-component doc:name="Set payload geoserverReq HashMap"><![CDATA[payload = new java.util.HashMap();
+            <logger message="wqmodisCreateDownload for #[fileName]" level="INFO" doc:name="wqmodisCreateDownload "/>
+            <set-variable variableName="wqModisOutLocalFullPath" value="#[wqModisOutLocalDir+fileName ]" doc:name="wqModisOutLocalFullPath"/>
+            <component class="it.planetek.saimon.zip.DownloadZipCreator" doc:name="DownloadZipCreator"/>
+            <set-variable variableName="Prod_Download" value="#[payload]" doc:name="Prod_Download"/>
+            <logger message="Download Url: #[Prod_Download]" level="INFO" doc:name="Download Url"/>
+            <choice doc:name="Thematic?">
+                <when expression="#[noextFileName.split(&quot;_&quot;)[2] == &quot;Thematic&quot;]">
+                    <logger message="Load file in Geoserver: #[fileName]" level="INFO" doc:name="Load file in Geoserver"/>
+                    <expression-component doc:name="Set payload geoserverReq HashMap"><![CDATA[payload = new java.util.HashMap();
 payload.put("coveragestoreName", coverageName );
 payload.put("url", "file://"+wqModisOutLocalDir+fileName );
 payload.put("workspaceName", workspaceName);
 return payload;
 ]]></expression-component>
-        	<logger message="Call Geoserver flow with #[payload]" level="INFO" doc:name="Call Geoserver flow"/>
-        	<flow-ref name="geoserverImageMosaicFlow" doc:name="geoserverImageMosaicFlow"/>
+                    <logger message="Call Geoserver flow with #[payload]" level="INFO" doc:name="Call Geoserver flow"/>
+                    <flow-ref name="geoserverImageMosaicFlow" doc:name="geoserverImageMosaicFlow"/>
+                </when>
+                <otherwise>
+                    <logger message="#[fileName] is NOT Thematic, won't load in Geoserver" level="INFO" doc:name="No Thematic, No Geoserver"/>
+                </otherwise>
+            </choice>
+
             
             
              <logger message="Prepare metadata for Geonetwork for #[fileName]" level="INFO" doc:name="Prepare metadata for Geonetwork"/>
@@ -156,7 +168,7 @@ return payload;
             <set-variable variableName="Par_Type" value="#[new org.mule.module.json.JsonData('${wqmodis.partype}').get(noextFileName.split(&quot;_&quot;)[1]).toString()]" doc:name="Par_Type"/>
             <set-variable variableName="Res" value="#[Prod_Type.contains(&quot;Improved&quot;) ? &quot;&amp;lt;100m&quot; : &quot;1km&quot;]" doc:name="Res"/>
             <set-variable variableName="Res_Denominator" value="#[Prod_Type.contains(&quot;Improved&quot;) ? 1000000 : 10000000]" doc:name="Res_Denominator"/>
-            <set-variable variableName="Improve_Flag" value="#[Prod_Type.contains(&quot;Improved&quot;) ? &quot; improved with the fusion of on site measurements from Tracking Water Quality devices&quot; : &quot;&quot;]" doc:name="Improve_Flag"/>
+
             <set-variable variableName="Processing_Type" value="modis" doc:name="Processing_Type"/>
             <set-variable variableName="Publication_Date" value="#[ new java.text.SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ss&quot;).format(new java.util.Date())]" doc:name="Publication_Date"/>
             <set-variable variableName="Creation_Date" value="#[Publication_Date]" doc:name="Creation_Date"/>
@@ -174,7 +186,7 @@ return payload;
 	        <set-variable variableName="Extent_South" value="#[json:coverage/latLonBoundingBox/miny]" doc:name="Extent_South"/>
 	        <set-variable variableName="Extent_North" value="#[json:coverage/latLonBoundingBox/maxy]" doc:name="Extent_North"/>
 	
-	        <parse-template location="ICWM_Dataset_Template_ISO19139.xml" doc:name="Parse Template ISO19139"/>
+	        <parse-template location="Dataset_Template_ISO19139.xml" doc:name="Parse Template ISO19139"/>
 	        <object-to-string-transformer doc:name="Object to String"/>
 	        <expression-component doc:name="Set payload geonetworkReq HashMap"><![CDATA[String metadataXml = payload;
 payload = new java.util.HashMap();
@@ -187,4 +199,5 @@ return payload;]]></expression-component>
 	            
         </foreach>
     </flow>
+
 </mule>

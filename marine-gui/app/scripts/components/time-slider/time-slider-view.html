@@ -1,0 +1,24 @@
+<div ng-controller="TimeSliderCtrl as timeSlider">
+
+
+
+  <div hide-xs class="timeSlider">
+    <md-item-content layout="row" layout-align="center center" style="margin-left:60px;margin-right:60px">
+      <span id="currentTimeSlider" style="font-weight:bold;margin-right:80px;margin-top:20px"></span>
+      <md-slider id="slider" flex="" step="1" min="0" max="{{timeSlider.lengthSlider}}" ng-model="currentDate" aria-label="red"  class="md-primary">
+      </md-slider>
+    </md-item-content>
+  <div>
+
+    <div class="timeSliderPlayer">
+      <div style="margin-top:15px">
+        <md-item-content layout="row" layout-align="center center">
+          <img src="images/icons/rewind.png" alt="Logo" width="36" height="36" style="cursor: pointer;" ng-click="rewindSlider()">
+          <img id="playButton" src="images/icons/play.png" alt="Logo" width="50" height="50" style="margin-left:5px;margin-right:5px;cursor: pointer;" ng-click="playSlider()">
+          <img src="images/icons/forward.png" alt="Logo" width="36" height="36" style="cursor: pointer;" ng-click="forwardSlider()">
+        </md-item-content>
+      <div>
+    <div>
+
+
+<div>

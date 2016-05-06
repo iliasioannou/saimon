@@ -1,0 +1,159 @@
+{
+	"layers" : {
+		"baselayers" : [{
+			"name" : "OpenStreetMap",
+			"group" : "base",
+			"source" : {
+				"type" : "OSM",
+				"crossOrigin" : "null"
+			},
+			"active" : true,
+			"visible" : true,
+			"opacity" : 1,
+			"layerOptions" : {
+				"attribution" : "\u00A9 OpenStreetMap contributors",
+				"url" : "http://www.openstreetmap.org/copyright"
+			}
+		},{
+			"name" : "Mapbox",
+			"group" : "base",
+			"source" : {
+				"type" : "MapBox",
+				"mapId" : "mapbox.satellite",
+				"accessToken" : "pk.eyJ1IjoicGsyMDE0IiwiYSI6IkRCTHI5Q28ifQ.oA7Qj3tLfqal-RZCRBISPA",
+				"crossOrigin" : "null"
+			},
+			"active" : false,
+			"visible" : true,
+			"opacity" : 1,
+			"layerOptions" : {
+				"attribution" : "Mapbox ©",
+				"url" : "https://www.mapbox.com/about/maps"
+			}
+		},{
+			"name" : "Ortofoto RealVista 1.0",
+			"group" : "base",
+			"source" : {
+				"type" : "TileWMS",
+				"crossOrigin" : "null",
+				"urls" : [
+					"http://locationHost/basemap"
+				],
+				"params" : {
+					"LAYERS" : "rv1",
+					"TILED" : true,
+					"FORMAT" : "image/jpeg"
+				}
+			},
+			"active" : false,
+			"visible" : true,
+			"opacity" : 1,
+			"layerOptions" : {
+				"attribution" : "Imagery \u00A9 Realvista contributors",
+				"url" : "http://www.realvista.it/"
+			}
+		}],
+		"overlays" : {
+			"olLayers" : [{
+				"id" : "sst",
+				"name" : "Aree a rischio frana",
+				"group" : "Overlays",
+				"source" : {
+					"type" : "TileWMS",
+					"crossOrigin" : "null",
+					"legend":"http://maps.planetek.it/acritas/resources/legend/SST_Legend.JPG",
+					"urls" : [
+						"http://locationHost/tebegeoserver/pkh108_SAIMON/wms"
+					],
+					"params" : {
+						"LAYERS" : "SST",
+						"TIME"  : "2012-04-01",
+						"TILED" : true
+					}
+				},
+				"active" : true,
+				"visible" : false,
+				"opacity" : 0.8,
+				"layerOptions" : {
+					"attribution" : "",
+					"url" : ""
+				}
+			},{
+				"id" : "wt",
+				"name" : "Aree a rischio frana",
+				"group" : "Overlays",
+				"source" : {
+					"type" : "TileWMS",
+					"crossOrigin" : "null",
+					"legend":"http://maps.planetek.it/acritas/resources/legend/WT_Legend.JPG",
+					"urls" : [
+						"http://locationHost/tebegeoserver/pkh108_SAIMON/wms"
+					],
+					"params" : {
+						"LAYERS" : "WT",
+						"TIME"  : "2012-04-01",
+						"TILED" : true
+					}
+				},
+				"active" : true,
+				"visible" : false,
+				"opacity" : 0.8,
+				"layerOptions" : {
+					"attribution" : "",
+					"url" : ""
+				}
+			},
+			{
+				"id" : "chl",
+				"name" : "Persistent Scatterers Map",
+				"group" : "Overlays",
+				"source" : {
+					"type" : "TileWMS",
+					"crossOrigin" : "null",
+					"legend":"http://maps.planetek.it/acritas/resources/legend/Chl_Legend.JPG",
+					"urls" : [
+						"http://locationHost/tebegeoserver/pkh108_SAIMON/wms"
+					],
+					"params" : {
+						"LAYERS" : "CHL",
+						"TIME"  : "2012-04-01",
+						"TILED" : true
+					},
+					"serverType" : "geoserver"
+				},
+				"active" : true,
+				"visible" : true,
+				"opacity" : 0.8,
+				"layerOptions" : {
+					"attribution" : "",
+					"url" : ""
+				}
+			}],
+			"metadata" : []
+		}
+	},
+	"rheticusAPI" : {
+		"host" : "http://locationHost/rheticusapi/api/v1",
+		"dataset" : {
+			"path" : "/datasets/#datasetid",
+			"datasetid" : "#datasetid"
+		},
+		"measure" : {
+			"path" : "/datasets/#datasetid/pss/#psid/measures?type=DL&periods=#periods",
+			"datasetid" : "#datasetid",
+			"psid" : "#psid",
+			"periods" : "#periods",
+			"properties" : {
+				"datasetid" : "datasetid",
+				"psid" : "psid",
+				"date" : "data",
+				"measure" : "measure"
+			}
+		},
+		"authentication" : {
+			"path" : "/authenticate?username=#username&password=#password",
+			"username" : "#username",
+			"password" : "#password"
+		}
+	}
+}

@@ -1,0 +1,486 @@
+$icon-font-path: "../bower_components/bootstrap-sass-official/assets/fonts/bootstrap/";
+
+// bower:scss
+@import "bootstrap-sass-official/assets/stylesheets/_bootstrap.scss";
+// endbower
+.browsehappy {
+    margin: 0.2em 0;
+    background: #ccc;
+    color: #000;
+    padding: 0.2em 0;
+}
+
+body {
+    padding: 0;
+    overflow: hidden !important;
+}
+html {
+    padding: 0;
+    overflow: hidden !important;
+}
+
+
+/* Everything but the jumbotron gets side spacing for mobile first views */
+
+.header,
+.marketing,
+.footer {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+
+/* Custom page header */
+
+.header {
+	position: absolute;
+	z-index: 2;
+	top: 2%;
+	left: 1%;
+	background-color: rgba(255, 255, 255, 0.4);
+	border-radius: 15px;
+	padding: 0;
+
+    /* Make the masthead heading the same height as the navigation */
+    h3 {
+        margin-top: 0;
+        margin-bottom: 0;
+        line-height: 40px;
+        padding-bottom: 19px;
+    }
+}
+.brand {
+    width: 14em;
+	margin: 5px;
+}
+
+
+/* Custom page footer */
+
+.footer {
+    padding-top: 5px;
+    color: #000;
+    border-top-right-radius: 5px;
+	background-color: rgba(255, 255, 255, 0.4);
+}
+
+.container-narrow > hr {
+    margin: 30px 0;
+}
+
+
+/* Sticky footer styles
+-------------------------------------------------- */
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    /*width: 100%;
+    /* Set the fixed height of the footer here */
+	/*background-color: #f5f5f5;*/
+	z-index: 1;
+}
+.footer div p {
+	margin:0;
+}
+.container {
+	padding-left: 0px;
+    padding-right: pxpx;
+}
+
+
+/* Responsive: Portrait tablets and up */
+
+@media screen and (min-width: 768px) {
+    /* Remove the padding we set earlier */
+    .header,
+    .marketing,
+    .container,
+    .footer {
+        padding-left: 0 !important;
+        margin: 0 !important;
+    }
+    /* Space out the masthead */
+    .header {
+        margin-bottom: 30px;
+    }
+    .navbar {
+        margin-bottom: 0px;
+    }
+    /* Remove the bottom border on the jumbotron for visual effect */
+    .jumbotron {
+        border-bottom: 0;
+    }
+}
+
+
+/* Overrides */
+md-backdrop.md-sidenav-backdrop {
+    background-color:transparent
+}
+md-input-container .md-input {
+  -webkit-order: 2;
+      -ms-flex-order: 2;
+          order: 2;
+  display: block;
+  margin-top: 0;
+  background: none;
+  padding-top: 2px;
+  padding-bottom: 1px;
+  padding-left: 2px;
+  padding-right: 2px;
+  border-width: 0 0 1px 0;
+  line-height: 26px;
+  height: 30px;
+  -ms-flex-preferred-size: 100%;
+  border-radius: 0;
+  border-style: solid;
+  width: 100%;
+  box-sizing: border-box;
+  float: left;
+}
+
+md-toolbar {
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    position: relative;
+    z-index: 2;
+    font-size: 20px;
+    min-height: 55px;
+    max-height: 55px;
+    width: 100%;
+  }
+
+.md-toolbar-tools {
+      font-size: 20px;
+      letter-spacing: 0.005em;
+      box-sizing: border-box;
+      font-weight: 400;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-align-items: center;
+          -ms-flex-align: center;
+              align-items: center;
+      -webkit-flex-direction: row;
+          -ms-flex-direction: row;
+              flex-direction: row;
+      width: 100%;
+      height: 55px;
+      max-height: 55px;
+      padding: 0 16px;
+      margin: 0;
+}
+
+.ol-touch .ol-control button {
+    font-size: 1.14em;
+}
+
+
+.ng-invalid.ng-dirty {
+	border-color: #FA787E;
+}
+
+.ng-valid.ng-dirty {
+	border-color: #78FA89;
+}
+
+.form-control {
+	font-size: 12px;
+    height: 24px;
+    line-height: 1.2;
+    padding: 2px 12px;
+}
+
+
+
+
+/*ol interface*/
+
+.ol-zoomslider {
+    left: 0.65em !important;
+    top: 8.5em !important;
+}
+.ol-overlaycontainer-stopevent .ol-zoom{
+    height: 3.85em;
+    top: 3em !important;
+	right: 0.5em !important;
+	left: auto !important;
+
+}
+
+.ol-zoom .ol-zoom-out {
+    border-radius: 0 0 2px 2px;
+    bottom: 3px;
+    position: absolute;
+}
+.ol-zoomslider-thumb {
+    margin: 0 0 0 1px !important;
+}
+.ol-scale-line {
+    background: none repeat scroll 0 0 rgba(0, 60, 136, 0.3);
+    border-radius: 4px;
+    bottom: 10px !important;
+    left: 8px;
+    padding: 2px;
+    position: fixed !important;
+}
+
+.pagination {
+	margin:0;
+}
+
+.table {
+	margin-bottom : 1px;
+}
+
+
+.switchpanel {
+    position: fixed;
+    z-index: 1;
+    bottom: 40px;
+    left: 8px;
+	  max-width: 440px;
+	  height: auto;
+	  max-height: 250px;
+    border-radius: 4px;
+    padding: 2px;
+    background-color: rgba(255, 255, 255, 0.4);
+	margin: 1px;
+}
+
+
+.timeSliderPlayer {
+  background-color: rgba(255, 255, 255, 0);
+  bottom: 40px;
+  left: 180px;
+  padding: 2px;
+  position: fixed;
+  z-index: 2;
+}
+
+.timeSlider {
+  background-color: white;
+  border-radius: 4px;
+  border:1px solid #003a57;
+  bottom: 10px;
+  height: 55px;
+  left: 150px;
+  padding: 2px;
+  position: fixed;
+  width: 80%;
+  z-index: 1;
+}
+
+
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* IE/Edge */
+  user-select: none;           /* non-prefixed version, currently
+                                  not supported by any browser */
+}
+
+
+.switchpanelabel2{
+	color: #000000;
+	font-size: 11px;
+	margin-left : 15px;
+}
+
+.keepoff {
+    top: -10000px;
+    position: absolute;
+}
+
+/* timeline chart*/
+
+.chart {
+	shape-rendering: crispEdges;
+}
+
+.mini text {
+	font: 9px sans-serif;
+}
+
+.main text {
+	font: 12px sans-serif;
+}
+
+.miniItem {
+	fill: white;
+	fill-opacity: .7;
+	stroke-width: 6;
+}
+
+.miniItem0 {
+	fill: darksalmon;
+	stroke-width: 6;
+}
+
+.miniItem1 {
+	fill: darkolivegreen;
+	fill-opacity: .7;
+	stroke-width: 6;
+}
+
+.miniItem2 {
+	fill: slategray;
+	fill-opacity: .7;
+	stroke-width: 6;
+}
+
+.nv-point {
+    stroke-opacity: 1!important;
+    stroke-width: 1px!important;
+    fill-opacity: 1!important;
+}
+
+.brush .extent {
+	stroke: gray;
+	fill: dodgerblue;
+	fill-opacity: .365;
+}
+.axis line, .axis path {
+	stroke: black;
+}
+
+
+table.gridtable {
+	font-family: verdana,arial,sans-serif;
+	font-size:11px;
+	float: right;
+	color:#333333;
+	margin-top: 20px;
+	border-width: 1px;
+	border-color: #666666;
+	border-collapse: collapse;
+}
+table.gridtable th {
+	border-width: 1px;
+	padding: 5px;
+	color:#ffffff;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #007FFF;
+}
+table.gridtable td {
+	border-width: 1px;
+	padding: 3px;
+	color:#333333;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #ffffff;
+}
+
+.close:hover {
+	color:#ffffff;
+  opacity:1;
+}
+
+
+.functionSwitcher {
+	z-index:3;
+	top : 0.5em;
+	right: 4em;
+}
+
+.map-control-panel {
+	z-index:4;
+	top: 7.4em;
+	right:.5em;
+}
+.map-control-panel > div{
+	right:0;
+}
+
+.layer-switcher {
+    position: absolute;
+    right: 0.5em;
+    text-align: left;
+	top: 14.8em !important;
+}
+
+.geocoderBar {
+    vertical-align:middle;
+    border-radius: 4px;
+    font-size: 14px;
+    height: 35px;
+    width:  180px;
+    color:  #000000;
+}
+.searchResult {
+    background-color: #ffffff;
+    margin-top: 3px;
+    position: absolute;
+    width: 180px;
+}
+.searchResult  > div{
+	 border-bottom: 1px solid #ccc;
+    -moz-user-select: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 6px 8px;
+    vertical-align: middle;
+}
+.credits{
+	z-index:1;
+	bottom: 0.5em;
+    right: 0.5em;
+}
+.credits > div{
+	float:left;
+}
+
+
+.ZoomControlsHelp {
+    height: 50px;
+    position: absolute;
+    right: 2.4em;
+    top: 3.0em !important;
+}
+
+.LayerSwitcherHelp {
+    height: 25px;
+    position: absolute;
+
+    right: 2.3em;
+    top: 14.9em !important;
+}
+
+.AboutHelp {
+    height: 1px;
+	width: 25px;
+    position: absolute;
+    left: 7.5em;
+    top: 2.25em !important;
+}
+
+.btn.active {
+    background-color: #ff0000 !important;
+}
+
+.flashMessage {
+	position: absolute;
+	bottom: -15px;
+	right: 40px;
+	z-index:2000;
+}

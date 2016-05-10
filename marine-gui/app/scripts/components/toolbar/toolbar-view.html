@@ -31,7 +31,7 @@
             <div >
               <label>{{ 'CatalogSettings' | translate }}</label>
               <form>
-                <button type="button" title="Catalog" ng-click="marine.openViewer()">
+                <button type="button" title="{{ 'CatalogSettings' | translate }}" ng-click="marine.openViewer()">
                   <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
                 </button>
                 {{ 'catalogHelpSettings' | translate }}
@@ -40,7 +40,7 @@
             <div style="margin-top:10px;">
             <label >{{ 'helpSettings' | translate }}</label>
             <form>
-              <button type="button" title="Catalog" ng-click="marine.openHelp()">
+              <button type="button" title="{{ 'helpSettings' | translate }}" ng-click="marine.openHelp()">
                 <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
               </button>
               {{ 'descriptionHelpSettings' | translate }}

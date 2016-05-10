@@ -54,7 +54,7 @@
 		"overlays" : {
 			"olLayers" : [{
 				"id" : "sst",
-				"name" : "Aree a rischio frana",
+				"name" : "SST",
 				"group" : "Overlays",
 				"source" : {
 					"type" : "TileWMS",
@@ -78,7 +78,7 @@
 				}
 			},{
 				"id" : "wt",
-				"name" : "Aree a rischio frana",
+				"name" : "WT",
 				"group" : "Overlays",
 				"source" : {
 					"type" : "TileWMS",
@@ -103,7 +103,7 @@
 			},
 			{
 				"id" : "chl",
-				"name" : "Persistent Scatterers Map",
+				"name" : "CHL",
 				"group" : "Overlays",
 				"source" : {
 					"type" : "TileWMS",

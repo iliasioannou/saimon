@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:quartz="http://www.mulesoft.org/schema/mule/quartz" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/quartz http://www.mulesoft.org/schema/mule/quartz/current/mule-quartz.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    <flow name="wqmodisSchedulerFlow">
+        <quartz:inbound-endpoint jobName="wqModisSaimonScheduler" repeatInterval="0" responseTimeout="10000" doc:name="Quartz" cronExpression="0 00 08 ? * *">
+            <quartz:event-generator-job/>
+        </quartz:inbound-endpoint>
+        <set-variable variableName="dayToProcess" value="#[new org.mule.el.datetime.DateTime().plusDays(-1).format(&quot;yyyy-MM-dd&quot;)]" doc:name="dayToProcess"/>
+        <set-payload value="{&quot;processDefinitionKey&quot;:&quot;${activiti.wqm.procdefkey}&quot;,&quot;variables&quot;:[{&quot;name&quot;:&quot;${activiti.wqm.startdatekey}&quot;,&quot;type&quot;:&quot;date&quot;,&quot;value&quot;:&quot;#[dayToProcess]T00:00:00Z&quot;},{&quot;name&quot;:&quot;${activiti.wqm.enddatekey}&quot;,&quot;type&quot;:&quot;date&quot;,&quot;value&quot;:&quot;#[dayToProcess]T23:59:59Z&quot;}]}" doc:name="Create Activity start wf request"/>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <logger message="Request to activiti: #[payload]" level="INFO" doc:name="Request to activiti"/>
+        <http:request config-ref="HTTP_Request_Activiti" path="runtime/process-instances" method="POST" doc:name="Start Activity WQModis WF">
+            <http:request-builder>
+                <http:header headerName="Content-Type" value="application/json"/>
+            </http:request-builder>
+        </http:request>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <logger message="Activiti resp: #[payload]" level="INFO" doc:name="Activiti resp"/>
+        <catch-exception-strategy doc:name="Catch Exception Strategy">
+            <object-to-string-transformer doc:name="Object to String"/>
+            <logger message="Error wqmodisScheduler: #[payload]" level="INFO" doc:name="Error wqmodis Scheduler"/>
+        </catch-exception-strategy>
+    </flow>
+</mule>

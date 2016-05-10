@@ -57,31 +57,33 @@ gte = toFormat.format(gte);
 lte = toFormat.format(lte);
 ]]></expression-component>
 
-            <set-payload value="{&quot;esIndex&quot;:&quot;${elasticsearch.modis.index}&quot;,&quot;esType&quot;:&quot;${elasticsearch.modis.type}&quot;,&quot;esQuery&quot;:{&quot;query&quot;:{&quot;bool&quot;:{&quot;must&quot;:[{&quot;range&quot;:{&quot;date_created&quot;:{&quot;gte&quot;:&quot;#[gte]&quot;,&quot;lte&quot;:&quot;#[lte]&quot;,&quot;time_zone&quot;:&quot;+1:00&quot;}}}],&quot;should&quot;:[{&quot;match&quot;:{&quot;processing_control_input_parameters_suite&quot;:&quot;SST&quot;}},{&quot;match&quot;:{&quot;processing_control_input_parameters_suite&quot;:&quot;OC&quot;}}],&quot;minimum_should_match&quot;:1}}}}" doc:name="Set ES query"/>
+            <set-payload value="{&quot;esIndex&quot;:&quot;${elasticsearch.modis.index}&quot;,&quot;esType&quot;:&quot;${elasticsearch.modis.type}&quot;,&quot;esQuery&quot;:{&quot;query&quot;:{&quot;bool&quot;:{&quot;must&quot;:[{&quot;range&quot;:{&quot;date_created&quot;:{&quot;gte&quot;:&quot;#[gte]&quot;,&quot;lte&quot;:&quot;#[lte]&quot;,&quot;time_zone&quot;:&quot;+1:00&quot;}}},{&quot;geo_shape&quot;:{&quot;location&quot;:{&quot;shape&quot;:{&quot;type&quot;:&quot;polygon&quot;,&quot;coordinates&quot;:${wqmodis.aoi}}}}}],&quot;should&quot;:[{&quot;match&quot;:{&quot;processing_control_input_parameters_suite&quot;:&quot;SST&quot;}},{&quot;match&quot;:{&quot;processing_control_input_parameters_suite&quot;:&quot;OC&quot;}}],&quot;minimum_should_match&quot;:1}}}}" doc:name="Set ES query"/>
             <logger message="ES: #[payload]" level="INFO" doc:name="Logger"/>
             <flow-ref name="elasticSearchFlow" doc:name="elasticSearchFlow"/>
-            <set-variable variableName="wqModisMap" value="#[new java.util.HashMap()]" doc:name="wqModisMap"/>
-            <expression-component doc:name="Init wqModisMap"><![CDATA[wqModisMap.put("count", payload.size()/2);
+            <choice doc:name="Modis data found?">
+                <when expression="#[payload.size()&gt;0]">
+                    <set-variable variableName="wqModisMap" value="#[new java.util.HashMap()]" doc:name="wqModisMap"/>
+                    <expression-component doc:name="Init wqModisMap"><![CDATA[wqModisMap.put("count", payload.size()/2);
 wqModisMap.put("runDate", gte);]]></expression-component>
-            <set-variable variableName="ocList" value="#[new java.util.ArrayList()]" doc:name="ocList"/>
-            <set-variable variableName="sstList" value="#[new java.util.ArrayList()]" doc:name="sstList"/>
-            <foreach doc:name="For Each">
-                <choice doc:name="OC or SST?">
-                    <when expression="#[payload.get(&quot;processing_control_input_parameters_suite&quot;)==&quot;OC&quot;]">
-                        <expression-component doc:name="add to ocList"><![CDATA[ocList.add("http://oceandata.sci.gsfc.nasa.gov/cgi/getfile/"+payload.get("product_name"));]]></expression-component>
-                    </when>
-                    <otherwise>
-                        <expression-component doc:name="add to sstList"><![CDATA[sstList.add("http://oceandata.sci.gsfc.nasa.gov/cgi/getfile/"+payload.get("product_name"));]]></expression-component>
-                    </otherwise>
-                </choice>
-            </foreach>
-            <expression-component doc:name="Add ocList and sstList to wqModisMap"><![CDATA[wqModisMap.put("OC", ocList);
+                    <set-variable variableName="ocList" value="#[new java.util.ArrayList()]" doc:name="ocList"/>
+                    <set-variable variableName="sstList" value="#[new java.util.ArrayList()]" doc:name="sstList"/>
+                    <foreach doc:name="For Each">
+                        <choice doc:name="OC or SST?">
+                            <when expression="#[payload.get(&quot;processing_control_input_parameters_suite&quot;)==&quot;OC&quot;]">
+                                <expression-component doc:name="add to ocList"><![CDATA[ocList.add("http://oceandata.sci.gsfc.nasa.gov/cgi/getfile/"+payload.get("product_name"));]]></expression-component>
+                            </when>
+                            <otherwise>
+                                <expression-component doc:name="add to sstList"><![CDATA[sstList.add("http://oceandata.sci.gsfc.nasa.gov/cgi/getfile/"+payload.get("product_name"));]]></expression-component>
+                            </otherwise>
+                        </choice>
+                    </foreach>
+                    <expression-component doc:name="Add ocList and sstList to wqModisMap"><![CDATA[wqModisMap.put("OC", ocList);
 wqModisMap.put("SST", sstList);]]></expression-component>
-            <logger message="wqModisMap: #[wqModisMap]" level="INFO" doc:name="wqModisMap"/>
-            <set-payload value="#[wqModisMap]" doc:name="Set wqModisMap"/>
-            <json:object-to-json-transformer doc:name="Object to JSON"/>
-            <scripting:component doc:name="Python">
-	            <scripting:script engine="jython"><![CDATA[# client.py
+                    <logger message="wqModisMap: #[wqModisMap]" level="INFO" doc:name="wqModisMap"/>
+                    <set-payload value="#[wqModisMap]" doc:name="Set wqModisMap"/>
+                    <json:object-to-json-transformer doc:name="Object to JSON"/>
+                    <scripting:component doc:name="Python">
+                        <scripting:script engine="jython"><![CDATA[# client.py
 import xmlrpclib
 
 wqProps = muleContext.getRegistry().get("wqProps")
@@ -93,16 +95,22 @@ scriptName = wqProps["wqmodis.process"]
 print xmlrpcServer, moduleName, scriptName
 
 proxy = xmlrpclib.ServerProxy(xmlrpcServer)
-result = proxy.execute( moduleName, scriptName, payload)]]>
-				</scripting:script>
-	        </scripting:component>
-            <logger message="Py res: #[payload]" level="INFO" doc:name="Py res"/>
-            <set-variable variableName="wqModisReturnCode" value="#[json:returnCode]" doc:name="wqModisReturnCode"/>
-            <message-filter throwOnUnaccepted="true" doc:name="(wqModisReturnCode != 0) throw Exception!">
-                <expression-filter expression="#[wqModisReturnCode.equals(&quot;0&quot;)]"/>
-            </message-filter>
-            <set-variable variableName="wqModisOutPath" value="#[json:outPath]" doc:name="wqModisOutPath"/>
-            <flow-ref name="wqmodisLoaderFlow" doc:name="wqmodisLoaderFlow"/>
+result = proxy.execute( moduleName, scriptName, payload)]]></scripting:script>
+                    </scripting:component>
+                    <logger message="Py res: #[payload]" level="INFO" doc:name="Py res"/>
+                    <set-variable variableName="wqModisReturnCode" value="#[json:returnCode]" doc:name="wqModisReturnCode"/>
+                    <message-filter throwOnUnaccepted="true" doc:name="(wqModisReturnCode != 0) throw Exception!">
+                        <expression-filter expression="#[wqModisReturnCode.equals(&quot;0&quot;)]"/>
+                    </message-filter>
+                    <set-variable variableName="wqModisOutPath" value="#[json:outPath]" doc:name="wqModisOutPath"/>
+                    <flow-ref name="wqmodisLoaderFlow" doc:name="wqmodisLoaderFlow"/>
+                </when>
+                <otherwise>
+                    <logger message="No Modis data found for #[gte] run" level="INFO" doc:name="No Modis data found"/>
+                    <set-variable variableName="wqModisReturnCode" value="1" doc:name="wqModisReturnCode"/>
+                </otherwise>
+            </choice>
+
 			<set-payload doc:name="Set activitiSignalerFlow Request" value="{ &quot;executionId&quot;:&quot;#[executionId]&quot;,&quot;signalName&quot;:&quot;#[signalName]&quot;,&quot;vars&quot;:{&quot;result&quot;:&quot;#[wqModisReturnCode]&quot;} }"/>
             <flow-ref name="activitiSignalerFlow" doc:name="activitiSignalerFlow"/>
         </async>

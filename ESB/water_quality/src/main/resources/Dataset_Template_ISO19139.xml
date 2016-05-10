@@ -292,7 +292,7 @@
                         <gco:CharacterString>OGC:WMS</gco:CharacterString>
                      </gmd:protocol>
                      <gmd:name>
-                        <gco:CharacterString>#[noextFileName]</gco:CharacterString>
+                        <gco:CharacterString>#[coverageName]</gco:CharacterString>
                      </gmd:name>
                      <gmd:description gco:nilReason="missing">
                         <gco:CharacterString/>

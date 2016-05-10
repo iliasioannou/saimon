@@ -61,17 +61,14 @@ lte = toFormat.format(lte);
             <logger message="ES: #[payload]" level="INFO" doc:name="Logger"/>
             <flow-ref name="elasticSearchFlow" doc:name="elasticSearchFlow"/>
             <set-variable variableName="wqModisMap" value="#[new java.util.HashMap()]" doc:name="wqModisMap"/>
-            <expression-component doc:name="Init wqModisMap"><![CDATA[wqModisMap.put("count", payload.size()/2);]]></expression-component>
-            <set-variable variableName="outPrefixesSet" value="#[new java.util.HashSet()]" doc:name="outPrefixesSet"/>
+            <expression-component doc:name="Init wqModisMap"><![CDATA[wqModisMap.put("count", payload.size()/2);
+wqModisMap.put("runDate", gte);]]></expression-component>
             <set-variable variableName="ocList" value="#[new java.util.ArrayList()]" doc:name="ocList"/>
             <set-variable variableName="sstList" value="#[new java.util.ArrayList()]" doc:name="sstList"/>
             <foreach doc:name="For Each">
                 <choice doc:name="OC or SST?">
                     <when expression="#[payload.get(&quot;processing_control_input_parameters_suite&quot;)==&quot;OC&quot;]">
                         <expression-component doc:name="add to ocList"><![CDATA[ocList.add("http://oceandata.sci.gsfc.nasa.gov/cgi/getfile/"+payload.get("product_name"));]]></expression-component>
-                        <scripting:component doc:name="Save file prefix to outPrefixesSet">
-                            <scripting:script engine="jython"><![CDATA[outPrefixesSet.add(payload["product_name"].rsplit("/", 1)[-1].split(".")[0][0:8])]]></scripting:script>
-                        </scripting:component>
                     </when>
                     <otherwise>
                         <expression-component doc:name="add to sstList"><![CDATA[sstList.add("http://oceandata.sci.gsfc.nasa.gov/cgi/getfile/"+payload.get("product_name"));]]></expression-component>
@@ -101,6 +98,9 @@ result = proxy.execute( moduleName, scriptName, payload)]]>
 	        </scripting:component>
             <logger message="Py res: #[payload]" level="INFO" doc:name="Py res"/>
             <set-variable variableName="wqModisReturnCode" value="#[json:returnCode]" doc:name="wqModisReturnCode"/>
+            <message-filter throwOnUnaccepted="true" doc:name="(wqModisReturnCode != 0) throw Exception!">
+                <expression-filter expression="#[wqModisReturnCode.equals(&quot;0&quot;)]"/>
+            </message-filter>
             <set-variable variableName="wqModisOutPath" value="#[json:outPath]" doc:name="wqModisOutPath"/>
             <flow-ref name="wqmodisLoaderFlow" doc:name="wqmodisLoaderFlow"/>
 			<set-payload doc:name="Set activitiSignalerFlow Request" value="{ &quot;executionId&quot;:&quot;#[executionId]&quot;,&quot;signalName&quot;:&quot;#[signalName]&quot;,&quot;vars&quot;:{&quot;result&quot;:&quot;#[wqModisReturnCode]&quot;} }"/>
@@ -124,15 +124,28 @@ payload.put("vars", vars);
             </catch-exception-strategy>
             <catch-exception-strategy doc:name="Catch Any other Exception Strategy">
                 <logger message="!EXCEPTION!#[&quot;\n&quot;] - EXCEPTION TYPE: #[exception.getCauseException().getClass()] #[&quot;\n&quot;] - EXCEPTION MESSAGE: #[exception.getMessage()] #[&quot;\n&quot;] - EXCEPTION CAUSE: #[exception.getCauseException()] #[&quot;\n&quot;] - EXCEPTION ORIGINAL PAYLOAD: #[payload]" level="ERROR" doc:name="Exception log"/>
+                <expression-component doc:name="activitiSignaler Flow Request"><![CDATA[java.util.HashMap vars = new java.util.HashMap();
+vars.put("result", "-1");
+vars.put("error", "Modis Processor exited with error code ("+wqModisReturnCode+")");
+
+payload = new java.util.HashMap();
+payload.put("executionId", executionId);
+payload.put("signalName", signalName);
+payload.put("vars", vars);
+
+]]></expression-component>
+                <json:object-to-json-transformer doc:name="Object to JSON"/>
+                <flow-ref name="activitiSignalerFlow" doc:name="Send Error through activitiSignaler Flow"/>
             </catch-exception-strategy>
+
         </choice-exception-strategy>
     </flow>
     <flow name="wqmodisLoaderFlow" processingStrategy="synchronous">
         <logger message="wqModisOutPath: #[wqModisOutPath]" level="INFO" doc:name="wqModisOutPath"/>
         <set-variable variableName="wqModisOutLocalDir" value="#[wqModisOutPath.replace(app.registry.wqProps[&quot;wq.share.basepath&quot;], &quot;${wq.share.mountpoint}&quot;).replace(&quot;\\&quot;,&quot;/&quot;)]" doc:name="wqModisOutLocalDir"/>
-        <scripting:component doc:name="List files starting with outPrefixesSet">
+        <scripting:component doc:name="List files in wqModisOutLocalDir">
             <scripting:script engine="jython"><![CDATA[import os
-result = [filename for filename in os.listdir(wqModisOutLocalDir) if filename[0:len(next(iter(outPrefixesSet)))] in outPrefixesSet ]]]></scripting:script>
+result = os.listdir(wqModisOutLocalDir)]]></scripting:script>
         </scripting:component>
         <foreach doc:name="For Each">
                 	<set-variable variableName="fileName" value="#[payload]" doc:name="fileName"/>
@@ -172,7 +185,7 @@ return payload;
             <set-variable variableName="Processing_Type" value="modis" doc:name="Processing_Type"/>
             <set-variable variableName="Publication_Date" value="#[ new java.text.SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ss&quot;).format(new java.util.Date())]" doc:name="Publication_Date"/>
             <set-variable variableName="Creation_Date" value="#[Publication_Date]" doc:name="Creation_Date"/>
-            <set-variable variableName="Temporal_Extent" value="#[new org.mule.el.datetime.DateTime(noextFileName.split(&quot;_&quot;)[0], &quot;'A'yyyyDDDHHmmss&quot;).format(&quot;yyyy-MM-dd'T'HH:mm:ss&quot;) ]" doc:name="Temporal_Extent"/>
+            <set-variable variableName="Temporal_Extent" value="#[new org.mule.el.datetime.DateTime(noextFileName.split(&quot;_&quot;)[0], &quot;'A'yyyyMMdd&quot;).format(&quot;yyyy-MM-dd'T'HH:mm:ss&quot;) ]" doc:name="Temporal_Extent"/>
             <logger message="Temp_Extent: #[Temporal_Extent] from #[noextFileName.split(&quot;_&quot;)[0]]" level="INFO" doc:name="Temp_Extent"/>
             <set-variable variableName="geoserverPublic" value="${geoserver.public}" doc:name="geoserverPublic"/>
             

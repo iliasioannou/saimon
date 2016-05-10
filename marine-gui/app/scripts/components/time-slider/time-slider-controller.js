@@ -124,7 +124,7 @@ angular.module('rheticus')
 			$scope.arrayDataTime=correctDate;
 			if(correctDate.length!==0){
         self.lengthSlider=$scope.arrayDataTime.length-1;
-				console.log(d3.time.format("%d/%m/%Y")($scope.arrayDataTime[0]));
+				//console.log(d3.time.format("%d/%m/%Y")($scope.arrayDataTime[0]));
 				document.getElementById('currentTimeSlider').innerHTML=d3.time.format("%d/%m/%Y")($scope.arrayDataTime[0]);
 			}else{
         self.lengthSlider=0;
@@ -178,22 +178,22 @@ angular.module('rheticus')
 	}
 
 	$scope.playSlider= function() {
-		console.log("playSlider");
-		console.log(document.getElementById('playButton').src);
+		//console.log("playSlider");
+		//console.log(document.getElementById('playButton').src);
 		if(document.getElementById('playButton').src.indexOf("play.png")>-1){
 			document.getElementById('playButton').src="images/icons/pause.png";
-			console.log("play");
-			console.log($scope.arrayDataTimeCurrent);
+			//console.log("play");
+			//console.log($scope.arrayDataTimeCurrent);
 			$scope.statusSlider=true;
 			$timeout($scope.loopSlider, 500);
 
 		}else if(document.getElementById('playButton').src.indexOf("pause.png")>-1){
-			console.log("pause");
+			//console.log("pause");
 			$scope.statusSlider=false;
 			$timeout($scope.loopSlider, 500);
 			document.getElementById('playButton').src="images/icons/play.png";
 		}else {
-			console.log("stop");
+			//console.log("stop");
 			$scope.currentDate=0;
 			if($scope.arrayDataTimeCurrent[$scope.currentDate]!==undefined){
 				document.getElementById('currentTimeSlider').innerHTML=d3.time.format("%d/%m/%Y")($scope.arrayDataTimeCurrent[$scope.currentDate]);

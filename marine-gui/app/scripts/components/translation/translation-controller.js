@@ -38,6 +38,42 @@
     'FOO': 'This is a paragraph'
   });
 
+  $translateProvider.translations('gr', {
+    'language':'Γλώσσα',
+    'titleToolbar': 'Marine',
+    'welcomeLogin':'Καλωσόρισμα',
+    'userLogin':'Μεταχειριζόμενος',
+    'passwordLogin':'Σύνθημα',
+    'buttonOnLogin':'Σύνδεση',
+    'buttonOffLogin':'Αποσυνδέομαι',
+    'errorLogin':'δεν επιτρέπεται !!!',
+    'statusLogin':'Έχετε συνδεθεί ως: ',
+    'accountToolbar':'Λογαριασμός',
+    'geocoderToolbar':'Έρευνα',
+    'geocoderPlaceholder':'Έρευνα ...',
+    'myAreasToolbar':'περιοχές μου',
+    'filtersToolbar': 'φίλτρα',
+    'titleFilters': 'Marine Map Advanced Filters',
+    'helpFilters': 'Please select the desired range',
+    'dataProvidersFilters': 'Οι πάροχοι δεδομένων',
+    'settingsToolbar': 'Ρυθμίσεις',
+    'basemapSettings': 'Basemap',
+    'categoriesTitleSettings': 'κατηγορίες ποιότητας του νερού',
+    'loadingResult':'αποτέλεσμα φόρτωσης...',
+    'noResult':'Δεν βρέθηκε αποτέλεσμα...',
+    "openSettings":"επιλογές",
+    "trasparence":"διαφάνεια",
+    "chl":"Χλωροφύλλη",
+    "sst":"Επιφανειακή θερμοκρασία θάλασσας",
+    "wt":"νερό διαφάνεια",
+    'currentTime':'Σημερινή ημερομηνία: ',
+    'CatalogSettings':'Κατάλογος',
+    'catalogHelpSettings':'Πηγαίνετε να ψάξετε Κατάλογος',
+    'helpSettings':'Βοήθεια',
+    'descriptionHelpSettings':'Πηγαίνετε να βοηθήσει',
+    'FOO': 'This is a paragraph'
+  });
+
   $translateProvider.translations('it', {
     'language':'Lingua',
     'titleToolbar': 'Marine',

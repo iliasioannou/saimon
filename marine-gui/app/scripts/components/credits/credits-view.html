@@ -2,13 +2,23 @@
 	<div ng-show="credits.show">
 		<div style="font-size:10px; padding-bottom:0px;">
 			<label ng-repeat="baselayer in credits.baselayers|filter:{active:true}">
-				<a href="{{baselayer.layerOptions.url}}">
+				<a href="{{baselayer.layerOptions.url}}" >
 					{{baselayer.layerOptions.attribution}}
 				</a>
 			</label>
-			<label ng-repeat="overlay in credits.overlays|filter:{active:true}">
-				<a href="{{overlay.layerOptions.url}}">
+			<label ng-repeat="overlay in credits.overlays|filter:{visible:true}">
+				<a href="{{overlay.layerOptions.url}}" >
 					{{overlay.layerOptions.attribution}}
+				</a>
+			</label>
+			<label>
+				<a>
+					-
+				</a>
+			</label>
+			<label >
+				<a href="../home/pdf/terms_and_conditions.pdf">
+					Rheticus®
 				</a>
 			</label>
 		</div>

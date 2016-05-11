@@ -59,7 +59,6 @@ payload.put("size", paginationSize);]]></expression-component>
                 <logger message="ESFlow count req:  #[payload]" level="DEBUG" doc:name="ESFlow count req"/>
 
                 <http:request config-ref="HTTP_Request_ES" path="#[esIndex]/#[esType]/_count" method="POST" doc:name="count total ElasticSearch results">
-                    <http:failure-status-code-validator values="100"/>
                 </http:request>
                 <object-to-string-transformer doc:name="Object to String"/>
                 <logger message="ESflow count resp #[payload]" level="DEBUG" doc:name="ESflow count resp"/>

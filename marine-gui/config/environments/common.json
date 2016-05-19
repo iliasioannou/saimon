@@ -2,9 +2,9 @@
 	"rheticusHeaderImage" : "./images/RheticusLogo.png",
 	"map" : {
 		"center" : {
-			"lon" : 25.20,
-			"lat" : 37.89,
-			"zoom" : 6,
+			"lon" : 20.40,
+			"lat" : 39.10,
+			"zoom" : 8,
 			"bounds": [],
   		"projection": "EPSG:4326"
 		},
@@ -32,5 +32,23 @@
 	"marineService" : {
 		"catalog" : "http://marineservices.rheticus.eu/geonetwork/srv/eng/catalog.search#/home",
 		"help" : ""
+	},
+	"CHL" : {
+		"dailySlider":"CHL",
+		"tenDaysSlider":"CHLTEN",
+		"monthSlider":"CHLMON",
+		"month90Slider":"CHLMON90"
+	},
+	"SST" : {
+		"dailySlider":"SST",
+		"tenDaysSlider":"SST",
+		"monthSlider":"SST",
+		"month90Slider":"SST"
+	},
+	"WT" : {
+		"dailySlider":"WT",
+		"tenDaysSlider":"WT",
+		"monthSlider":"WT",
+		"month90Slider":"WT"
 	}
 }

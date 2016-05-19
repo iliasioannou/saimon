@@ -95,18 +95,7 @@ angular.module('rheticus')
 		var getUserDeals = function(){
 			return userDeals;
 		};
-		var redrawMap=function(time){
-			/*olData.getMap().then(function (map) {
-				var overlays = map.getOverlays();
-				console.log(overlays);
-			     overlays.forEach(function (overlay) {
 
-						 console.log(overlay);
-					 });
-
-			});*/
-
-		};
 
 
 
@@ -261,7 +250,6 @@ angular.module('rheticus')
 			"getBaselayers" : getBaselayers,
 			"getOverlays" : getOverlays,
 			"getUserDeals" : getUserDeals,
-			"redrawMap": redrawMap,
 			"setSpatialFilter" : setSpatialFilter,
 			"applyFiltersToMap" : applyFiltersToMap
 		});

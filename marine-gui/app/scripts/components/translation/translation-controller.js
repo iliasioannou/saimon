@@ -35,6 +35,11 @@
     'catalogHelpSettings':'Go to search catalog',
     'helpSettings':'Help',
     'descriptionHelpSettings':'Go to help',
+    'optionsSlider':'Options',
+    'dailySlider':'Daily',
+    'tenDaysSlider':'10 Days',
+    'monthSlider':'Monthly',
+    'month90Slider':'Monthly 90° percentile',
     'FOO': 'This is a paragraph'
   });
 
@@ -108,6 +113,11 @@
     'catalogHelpSettings':'Vai al catalogo di ricerca',
     'helpSettings':'Aiuto',
     'descriptionHelpSettings':'Visualizza aiuto',
+    'optionsSlider':'Opzioni',
+    'dailySlider':'Giornaliero',
+    'tenDaysSlider':'10 giorni',
+    'monthSlider':'Mensile',
+    'month90Slider':'Mensile 90° percentile',
     'FOO': 'This is a paragraph'
   });
 

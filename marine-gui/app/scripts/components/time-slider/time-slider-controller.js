@@ -402,9 +402,7 @@ angular.module('rheticus')
 		$timeout(function () {
 			$scope.currentDate=parseInt(i-1);
 			$scope.setSlider();
-		}, 50);
-
-
+		}, 0);
 		console.log("currentDate after:"+$scope.currentDate);
 
 	};

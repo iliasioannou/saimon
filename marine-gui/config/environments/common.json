@@ -35,20 +35,20 @@
 	},
 	"CHL" : {
 		"dailySlider":"CHL",
-		"tenDaysSlider":"CHLTEN",
-		"monthSlider":"CHLMON",
-		"month90Slider":"CHLMON90"
+		"tenDaysSlider":"CHL10",
+		"monthSlider":"CHL30",
+		"month90Slider":"CHL30P"
 	},
 	"SST" : {
 		"dailySlider":"SST",
-		"tenDaysSlider":"SST",
-		"monthSlider":"SST",
-		"month90Slider":"SST"
+		"tenDaysSlider":"SST10",
+		"monthSlider":"SST30",
+		"month90Slider":"SST30P"
 	},
 	"WT" : {
 		"dailySlider":"WT",
-		"tenDaysSlider":"WT",
-		"monthSlider":"WT",
-		"month90Slider":"WT"
+		"tenDaysSlider":"WT10",
+		"monthSlider":"WT30",
+		"month90Slider":"WT30P"
 	}
 }

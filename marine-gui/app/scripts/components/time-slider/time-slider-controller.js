@@ -157,7 +157,7 @@ angular.module('rheticus')
 		}
 
 
-		//FILTER LAYER DIMENSION BY USER CONTRACT
+	//FILTER LAYER DIMENSION BY USER CONTRACT
 	$scope.filterWMSDate= function () {
 				var correctDate=[];
 				for(var i=0;i<$scope.arrayDataTime.length;i++){
@@ -224,7 +224,7 @@ angular.module('rheticus')
 	};
 
 
-	//CHENGE WMS TIME --
+	//CHANGE WMS TIME --
 	$scope.rewindSlider= function() {
 				if($scope.currentDate>0){
 					$scope.currentDate--;
@@ -240,7 +240,7 @@ angular.module('rheticus')
 	};
 
 
-	//CHENGE WMS TIME ++
+	//CHANGE WMS TIME ++
 	$scope.forwardSlider= function() {
 				if($scope.currentDate<$scope.arrayDataTime.length-1){
 					$scope.currentDate++;
@@ -307,7 +307,7 @@ angular.module('rheticus')
 					console.log($scope.layerFound[i-1].Dimension);
 					return $scope.layerFound[i-1].Dimension;
 				}else{
-					return null;
+					return [];
 				}
 	};
 
@@ -336,26 +336,31 @@ angular.module('rheticus')
 				$scope.setOverlaysToType(type);
 				//CALCULATE NEW LAYER DIMENSION AND SET MAXSLIDER
 				var dimension = $scope.getDimensionAfterCapabilities();
-				self.maxSlider=dimension.length-1;
-				//SET SLIDER INDEX NEAR THE CURRENT DATE
-				var i =0;
-				var found=false;
-				while (i < dimension.length && !found) {
-					if(dimension[i]>=$scope.arrayDataTimeCurrent[$scope.currentDate]){
-						found=true;
+				if(dimension){
+					self.maxSlider=dimension.length-1;
+					//SET SLIDER INDEX NEAR THE CURRENT DATE
+					var i =0;
+					var found=false;
+					while (i < dimension.length && !found) {
+						if(dimension[i]>=$scope.arrayDataTimeCurrent[$scope.currentDate]){
+							found=true;
+						}
+						i++;
 					}
-					i++;
+					//FILTER DATE BY USER CONTRACT AND RESET INTERFACE
+					document.getElementById('playButton').src="images/icons/play.png";
+					$scope.arrayDataTime=dimension;
+					$scope.filterWMSDate();
+					$scope.arrayDataTimeCurrent=$scope.arrayDataTime;
+					//TIMEOUT NEEDED BECAUSE SYNC CHANGE OF currentDate AND MAXSLIDER GENERATE ERROR
+					$timeout(function () {
+						$scope.currentDate=parseInt(i-1);
+						$scope.setSlider();
+					}, 0);
+				}else{
+					console.log("Layer not found");
 				}
-				//FILTER DATE BY USER CONTRACT AND RESET INTERFACE
-				document.getElementById('playButton').src="images/icons/play.png";
-				$scope.arrayDataTime=dimension;
-				$scope.filterWMSDate();
-				$scope.arrayDataTimeCurrent=$scope.arrayDataTime;
-				//TIMEOUT NEEDED BECAUSE SYNC CHANGE OF currentDate AND MAXSLIDER GENERATE ERROR
-				$timeout(function () {
-					$scope.currentDate=parseInt(i-1);
-					$scope.setSlider();
-				}, 0);
+
 	};
 
 
@@ -367,11 +372,6 @@ angular.module('rheticus')
 					eval("overlays[i].source.params.LAYERS=configuration."+overlays[i].name+"."+type); // jshint ignore:line
 				}
 	};
-
-
-
-
-
 
 
 

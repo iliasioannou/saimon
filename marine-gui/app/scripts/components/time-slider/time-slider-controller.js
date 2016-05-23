@@ -184,14 +184,7 @@ angular.module('rheticus')
 				console.log("startLoop");
 				if($scope.currentDate<$scope.arrayDataTimeCurrent.length-1){
 					$scope.currentDate++;
-					self.chl.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
-					self.sst.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
-					self.wt.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
-					if($scope.arrayDataTimeCurrent[$scope.currentDate]!==undefined){
-						document.getElementById('currentTimeSlider').innerHTML=d3.time.format("%d/%m/%Y")($scope.arrayDataTimeCurrent[$scope.currentDate]);
-					}else{
-						document.getElementById('currentTimeSlider').innerHTML="";
-					}
+					$scope.setSlider();
 					$timeout($scope.loopSlider, 3000);
 				}else{
 					document.getElementById('playButton').src="images/icons/stop.png";
@@ -229,14 +222,7 @@ angular.module('rheticus')
 				if($scope.currentDate>0){
 					$scope.currentDate--;
 				}
-				self.chl.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
-				self.sst.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
-				self.wt.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
-				if($scope.arrayDataTimeCurrent[$scope.currentDate]!==undefined){
-					document.getElementById('currentTimeSlider').innerHTML=d3.time.format("%d/%m/%Y")($scope.arrayDataTimeCurrent[$scope.currentDate]);
-				}else{
-					document.getElementById('currentTimeSlider').innerHTML="";
-				}
+				$scope.setSlider();
 	};
 
 
@@ -245,14 +231,7 @@ angular.module('rheticus')
 				if($scope.currentDate<$scope.arrayDataTime.length-1){
 					$scope.currentDate++;
 				}
-				self.chl.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
-				self.sst.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
-				self.wt.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
-				if($scope.arrayDataTimeCurrent[$scope.currentDate]!==undefined){
-					document.getElementById('currentTimeSlider').innerHTML=d3.time.format("%d/%m/%Y")($scope.arrayDataTimeCurrent[$scope.currentDate]);
-				}else{
-					document.getElementById('currentTimeSlider').innerHTML="";
-				}
+				$scope.setSlider();
 	};
 
 

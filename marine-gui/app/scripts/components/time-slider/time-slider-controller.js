@@ -12,6 +12,7 @@ angular.module('rheticus')
 		var self = this; //this controller
 		$scope.myDateMax = new Date();
 		$scope.myDateMin = new Date();
+		$scope.limitDate = "";
     $scope.currentDate=0;
 		$scope.layerFound=[];
 		$scope.overlayForWatch = $scope.getOverlays();
@@ -43,6 +44,17 @@ angular.module('rheticus')
 	$scope.$watch("overlayForWatch[0].visible",function(value){
 			if (value && $scope.layerFound.length>0){
 			console.log("attivo SST: "+$scope.overlayForWatch[0].source.params.LAYERS);
+			//SET MENU PERIOD
+			var i =0;
+			var trovato=false;
+			while(i<$scope.layerFound.length && !trovato){
+				if ($scope.layerFound[i].Name==="SST"){
+					trovato=true;
+					$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[0])+"-"+d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
+				}
+				i++;
+			}
+			//RESTART WITH CURRENT TYPE
 			$scope.restart(self.timeSlider);
 		}
 
@@ -51,6 +63,17 @@ angular.module('rheticus')
 	$scope.$watch("overlayForWatch[1].visible",function(value){
 			if (value && $scope.layerFound.length>0){
 			console.log("attivo WT: "+$scope.overlayForWatch[1].source.params.LAYERS);
+			//SET MENU PERIOD
+			var i =0;
+			var trovato=false;
+			while(i<$scope.layerFound.length && !trovato){
+				if ($scope.layerFound[i].Name==="WT"){
+					trovato=true;
+					$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[0])+"-"+d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
+				}
+				i++;
+			}
+			//RESTART WITH CURRENT TYPE
 			$scope.restart(self.timeSlider);
 		}
 
@@ -59,6 +82,17 @@ angular.module('rheticus')
 	$scope.$watch("overlayForWatch[2].visible",function(value){
 		if (value && $scope.layerFound.length>0){
 			console.log("attivo CHL: "+$scope.overlayForWatch[2].source.params.LAYERS);
+			//SET MENU PERIOD
+			var i =0;
+			var trovato=false;
+			while(i<$scope.layerFound.length && !trovato){
+				if ($scope.layerFound[i].Name==="CHL"){
+					trovato=true;
+					$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[0])+"-"+d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
+				}
+				i++;
+			}
+			//RESTART WITH CURRENT TYPE
 			$scope.restart(self.timeSlider);
 		}
 
@@ -120,6 +154,8 @@ angular.module('rheticus')
 							find=true;
 							console.log("Found"+$scope.layerFound[i].Name);
 							//RESET ALL
+							$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[0])+"-"+d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
+							console.log($scope.limitDate);
 							$scope.currentDate=0;
 							document.getElementById('playButton').src="images/icons/play.png";
 							$scope.arrayDataTime=$scope.layerFound[i].Dimension;
@@ -320,6 +356,8 @@ angular.module('rheticus')
 				//CALCULATE NEW LAYER DIMENSION AND SET MAXSLIDER
 				var dimension = $scope.getDimensionAfterCapabilities();
 				if(dimension){
+
+					//SET MAX SLIDER LENGTH
 					self.maxSlider=dimension.length-1;
 					//SET SLIDER INDEX NEAR THE CURRENT DATE
 					var i =0;

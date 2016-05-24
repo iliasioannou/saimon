@@ -12,6 +12,9 @@
             <img  src="images/icons/list.png" alt="Logo" width="25" height="25" style="cursor: pointer;" ng-click="">
           </md-button>
           <md-menu-content width="4">
+            <div layout="row" layout-align="center" style="background-color:#003a57;">
+              <h2 style="font-size:15px;font-weight:bold;color:#ffffff;">{{ 'periodSlider' | translate }} {{limitDate}}</h2>
+            </div>
             <md-menu-item >
               <md-button ng-click="dailySlider()">
                   <div layout="row">

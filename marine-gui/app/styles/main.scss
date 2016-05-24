@@ -187,6 +187,14 @@ md-toolbar {
       margin: 0;
 }
 
+md-menu-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 304px;
+    overflow-y: auto;
+    padding: 0 0 12px;
+}
+
 .ol-touch .ol-control button {
     font-size: 1.14em;
 }

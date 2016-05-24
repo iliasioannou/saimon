@@ -8,7 +8,7 @@
  * Time Slider Controller for rheticus project
  */
 angular.module('rheticus')
-	.controller('TimeSliderCtrl',['$rootScope','$timeout','$scope','configuration','$translate','Flash','$http',function($rootScope,$timeout,$scope,configuration,$translate,Flash,$http){
+	.controller('TimeSliderCtrl',['$rootScope','$timeout','$scope','configuration','$translate','Flash','$http','olData',function($rootScope,$timeout,$scope,configuration,$translate,Flash,$http,olData){
 		var self = this; //this controller
 		$scope.myDateMax = new Date();
 		$scope.myDateMin = new Date();
@@ -231,6 +231,7 @@ angular.module('rheticus')
 				if($scope.currentDate<$scope.arrayDataTime.length-1){
 					$scope.currentDate++;
 				}
+				//$scope.changeWithNoRefreshMap();
 				$scope.setSlider();
 	};
 
@@ -243,6 +244,9 @@ angular.module('rheticus')
 				self.wt.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
 				if($scope.arrayDataTimeCurrent[$scope.currentDate]!==undefined){
 					document.getElementById('currentTimeSlider').innerHTML=d3.time.format("%d/%m/%Y")($scope.arrayDataTimeCurrent[$scope.currentDate]);
+					if(document.getElementById('playButton').src.indexOf("images/icons/stop.png")>-1){
+						document.getElementById('playButton').src="images/icons/play.png";
+					}
 				}else{
 					document.getElementById('currentTimeSlider').innerHTML="";
 				}
@@ -351,6 +355,30 @@ angular.module('rheticus')
 					eval("overlays[i].source.params.LAYERS=configuration."+overlays[i].name+"."+type); // jshint ignore:line
 				}
 	};
+
+
+	$scope.changeWithNoRefreshMap=function () {
+			olData.getMap().then(function(map){
+					var layers = map.getLayers();
+	        layers.forEach(function(layer) {
+	          if (layer.get('name') === 'Overlays') {
+							console.log((layer.getLayers().getArray())[2].get('name'));
+									for (var i = 0; i < (layer.getLayers().getArray()).length; i++) {
+											if((layer.getLayers().getArray())[i].get('name')==='SST' || (layer.getLayers().getArray())[i].get('name')==='WT' || (layer.getLayers().getArray())[i].get('name')==='CHL'){
+												var source=(layer.getLayers().getArray())[i].getSource();
+												var params = source.getParams();
+												console.log(source.getParams());
+												params.TIME = d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
+												source.updateParams(params);
+												console.log(source.getParams());
+											 }
+									}
+	            }
+						});
+			});
+	};
+
+
 
 
 

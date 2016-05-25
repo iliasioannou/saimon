@@ -31,7 +31,7 @@
 	},
 	"marineService" : {
 		"catalog" : "http://marineservices.rheticus.eu/geonetwork/srv/eng/catalog.search#/home",
-		"help" : ""
+		"help" : "../home/pdf/userguide_Marine.pdf"
 	},
 	"CHL" : {
 		"dailySlider":"CHL",

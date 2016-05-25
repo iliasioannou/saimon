@@ -9,7 +9,7 @@ angular
 		dataProviders : [{"name":" Sentinel","checked":true},{"name":" Cosmo","checked":true},{"name":" TerraSAR-X","checked":true}],
 		geocoder : {"url":"http://nominatim.openstreetmap.org/search?q=","params":"&limit=5&format=json&accept-language=en&polygon_geojson=1","paramsReverse":"&limit=1&format=json&zoom=18&accept-language=en","urlReverse":"http://nominatim.openstreetmap.org/reverse?"},
 		//custom environment configuration
-		marineService : {"catalog":"http://marineservices.rheticus.eu/geonetwork/srv/eng/catalog.search#/home","help":""},
+		marineService : {"catalog":"http://marineservices.rheticus.eu/geonetwork/srv/eng/catalog.search#/home","help":"../home/pdf/userguide_Marine.pdf"},
 		CHL : {"dailySlider":"CHL","tenDaysSlider":"CHL10","monthSlider":"CHL30","month90Slider":"CHL30P"},
 		SST : {"dailySlider":"SST","tenDaysSlider":"SST10","monthSlider":"SST30","month90Slider":"SST30P"},
 		WT : {"dailySlider":"WT","tenDaysSlider":"WT10","monthSlider":"WT30","month90Slider":"WT30P"},

@@ -77,6 +77,12 @@
       'catalogHelpSettings':'Mεταβείτε στον κατάλογο αναζήτησης',
       'helpSettings':'Βοήθεια',
       'descriptionHelpSettings':'Mεταβείτε στην βοήθεια',
+      'optionsSlider':'επιλογές',
+      'periodSlider':'περίοδος: ',
+      'dailySlider':'καθημερινά',
+      'tenDaysSlider':'10 ημέρες',
+      'monthSlider':'μηνιαίος',
+      'month90Slider':'μηνιαίος 90° εκατοστημόριο',
       'FOO': 'Αυτή είναι μια παράγραφος'
     });
 

@@ -15,6 +15,7 @@ angular.module('rheticus')
 		$scope.limitDate = "";
     $scope.currentDate=0;
 		$scope.layerFound=[];
+		//WATCH ALL OVERLAYS
 		$scope.overlayForWatch = $scope.getOverlays();
 
 		angular.extend(self,{

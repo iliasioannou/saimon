@@ -10,6 +10,9 @@ angular
 		geocoder : @@geocoder,
 		//custom environment configuration
 		marineService : @@marineService,
+		CHL : @@CHL,
+		SST : @@SST,
+		WT : @@WT,
 		layers : @@layers,
 		rheticusAPI : @@rheticusAPI
 	});

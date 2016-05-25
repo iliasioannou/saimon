@@ -51,7 +51,7 @@ public class DownloadZipCreator  implements Callable
     	
     	
     	
-    	String SAIMON_Product_type = SAIMON_Product_without_ext.split("_")[1];    	
+    	String SAIMON_Product_type = SAIMON_Product_without_ext.contains("Chl") ? "Chl" : (SAIMON_Product_without_ext.contains("SST") ? "SST" : "WT");
     	String SAIMON_Legenda = "/legenda/Legend_"+SAIMON_Product_type+".png";
     	
     	

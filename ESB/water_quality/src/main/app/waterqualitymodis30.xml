@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <flow name="waterqualitymodis30Flow" doc:description="{
+    &quot;executionId&quot;: 123456,
+    &quot;signalName&quot;: &quot;test_signal&quot;,
+    &quot;args&quot;: {
+                  &quot;date&quot;: &quot;Wed Jul 01 00:00:00 CEST 2015&quot;
+              }
+}">
+        <http:listener config-ref="HTTP_Listener_WQ" path="/wqm30" doc:name="HTTP"/>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to HashMap"/>
+        <set-variable variableName="inputPayload" value="#[payload]" doc:name="save inputPayload"/>
+        <logger message="WQModis30 Request received: #[payload]" level="INFO" doc:name="WQModis30 Request received"/>
+        <set-variable variableName="date" value="#[new java.text.SimpleDateFormat(&quot;EEE MMM dd kk:mm:ss z yyyy&quot;, java.util.Locale.ENGLISH).parse(payload.get(&quot;args&quot;).get(&quot;date&quot;))]" doc:name="date as Date"/>
+
+        <set-payload doc:name="Set Response" value="OK"/>
+        <async doc:name="Async">
+            <set-variable variableName="signalName" value="#[inputPayload.get(&quot;signalName&quot;)]" doc:name="signalName"/>
+            <set-variable variableName="executionId" value="#[inputPayload.get(&quot;executionId&quot;)]" doc:name="executionId"/>
+            <expression-component doc:name="Convert date format"><![CDATA[import java.text.SimpleDateFormat;
+
+SimpleDateFormat toFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+date = toFormat.format(date);
+]]></expression-component>
+            <set-variable variableName="wqm30Map" value="#[new java.util.HashMap()]" doc:name="wqm30Map"/>
+            <expression-component doc:name="Init wqm30Map"><![CDATA[wqm30Map.put("runDate", date);
+wqm30Map.put("procType", app.registry.wqProps["wqmodis30.proctype"]);]]></expression-component>
+
+                    <logger message="wqm30Map: #[wqm30Map]" level="INFO" doc:name="wqm30Map"/>
+                    <set-payload value="#[wqm30Map]" doc:name="Set wqm30Map"/>
+                    <json:object-to-json-transformer doc:name="Object to JSON"/>
+                    <scripting:component doc:name="Python">
+                        <scripting:script engine="jython"><![CDATA[# client.py
+import xmlrpclib
+
+wqProps = muleContext.getRegistry().get("wqProps")
+
+xmlrpcServer = "http://"+wqProps["wqmodis.host"]+":"+wqProps["wqmodis.port"]
+moduleName = wqProps["wqmodis30.module"]
+scriptName = wqProps["wqmodis30.process"]
+
+print xmlrpcServer, moduleName, scriptName
+
+proxy = xmlrpclib.ServerProxy(xmlrpcServer)
+result = proxy.execute( moduleName, scriptName, payload)]]></scripting:script>
+                    </scripting:component>
+            <logger message="Py res: #[payload]" level="INFO" doc:name="Py res"/>
+            <set-variable variableName="wqm30ReturnCode" value="#[json:returnCode]" doc:name="wqm30ReturnCode"/>
+            <message-filter throwOnUnaccepted="true" doc:name="(wqm30ReturnCode != 0) throw Exception!">
+                <expression-filter expression="#[wqm30ReturnCode.equals(&quot;0&quot;)]"/>
+            </message-filter>
+            <set-variable variableName="wqm30OutPath" value="#[json:outPath]" doc:name="wqm30OutPath"/>
+            <flow-ref name="wqm30LoaderFlow" doc:name="wqm30LoaderFlow"/>
+
+			<set-payload doc:name="Set activitiSignalerFlow Request" value="{ &quot;executionId&quot;:&quot;#[executionId]&quot;,&quot;signalName&quot;:&quot;#[signalName]&quot;,&quot;vars&quot;:{&quot;result&quot;:&quot;#[wqm30ReturnCode]&quot;} }"/>
+            <flow-ref name="activitiSignalerFlow" doc:name="activitiSignalerFlow"/>
+		</async>
+		
+		<choice-exception-strategy doc:name="Choice Exception Strategy">
+            <catch-exception-strategy when="#[exception.causedBy(org.python.core.PyException)]" doc:name="Catch Processor Python Exception Strategy">
+                <logger message="#[exception.getCauseException()]" level="ERROR" doc:name="Python Error"/>
+                <expression-component doc:name="activitiSignaler Flow Request"><![CDATA[java.util.HashMap vars = new java.util.HashMap();
+vars.put("result", "-1");
+vars.put("error", exception.getMessage()+": "+exception.getCauseException());
+
+payload = new java.util.HashMap();
+payload.put("executionId", executionId);
+payload.put("signalName", signalName);
+payload.put("vars", vars);
+
+]]></expression-component>
+                <json:object-to-json-transformer doc:name="Object to JSON"/>
+                <flow-ref name="activitiSignalerFlow" doc:name="Send Error through activitiSignaler Flow"/>
+            </catch-exception-strategy>
+            <catch-exception-strategy doc:name="Catch Any other Exception Strategy">
+                <logger message="!EXCEPTION!#[&quot;\n&quot;] - EXCEPTION TYPE: #[exception.getCauseException().getClass()] #[&quot;\n&quot;] - EXCEPTION MESSAGE: #[exception.getMessage()] #[&quot;\n&quot;] - EXCEPTION CAUSE: #[exception.getCauseException()] #[&quot;\n&quot;] - EXCEPTION ORIGINAL PAYLOAD: #[payload]" level="ERROR" doc:name="Exception log"/>
+                <expression-component doc:name="activitiSignaler Flow Request"><![CDATA[java.util.HashMap vars = new java.util.HashMap();
+vars.put("result", "-1");
+vars.put("error", "Modis Processor exited with error code ("+wqm30ReturnCode+")");
+
+payload = new java.util.HashMap();
+payload.put("executionId", executionId);
+payload.put("signalName", signalName);
+payload.put("vars", vars);
+
+]]></expression-component>
+                <json:object-to-json-transformer doc:name="Object to JSON"/>
+                <flow-ref name="activitiSignalerFlow" doc:name="Send Error through activitiSignaler Flow"/>
+            </catch-exception-strategy>
+
+        </choice-exception-strategy>
+    </flow>
+    
+    <flow name="wqm30LoaderFlow" processingStrategy="synchronous">
+    	<logger message="wqm30OutPath: #[wqm30OutPath]" level="INFO" doc:name="wqm30OutPath"/>
+        <set-variable variableName="wqm30OutLocalDir" value="#[wqm30OutPath.replace(app.registry.wqProps[&quot;wq.share.basepath&quot;], &quot;${wq.share.mountpoint}&quot;).replace(&quot;\\&quot;,&quot;/&quot;)]" doc:name="wqm30OutLocalDir"/>
+        <scripting:component doc:name="List files in wqm30OutLocalDir">
+            <scripting:script engine="jython"><![CDATA[import os
+result = os.listdir(wqm30OutLocalDir)]]></scripting:script>
+        </scripting:component>
+        <foreach doc:name="For Each">
+                	<set-variable variableName="fileName" value="#[payload]" doc:name="fileName"/>
+            <set-variable variableName="noextFileName" value="#[fileName.substring( 0, fileName.lastIndexOf(&quot;.&quot;) )]" doc:name="noextFileName"/>
+            <set-variable variableName="coverageName" value="#[noextFileName.split(&quot;_&quot;)[2].toUpperCase()+(noextFileName.contains(&quot;P90&quot;) ? &quot;30P&quot; : &quot;30&quot;)]" doc:name="coverageName"/>
+            <set-variable variableName="workspaceName" value="${geoserver.workspace}" doc:name="workspaceName"/>
+            <logger message="wqmodis30CreateDownload for #[fileName]" level="INFO" doc:name="wqmodis30CreateDownload "/>
+            <set-variable variableName="wqModisOutLocalFullPath" value="#[wqm30OutLocalDir+fileName ]" doc:name="wqModisOutLocalFullPath"/>
+            <component class="it.planetek.saimon.zip.DownloadZipCreator" doc:name="DownloadZipCreator"/>
+            <set-variable variableName="Prod_Download" value="#[payload]" doc:name="Prod_Download"/>
+            <logger message="Download Url: #[Prod_Download]" level="INFO" doc:name="Download Url"/>
+            <choice doc:name="Thematic?">
+                <when expression="#[noextFileName.split(&quot;_&quot;)[4] == &quot;Thematic&quot;]">
+                    <logger message="Load file in Geoserver: #[fileName]" level="INFO" doc:name="Load file in Geoserver"/>
+                    <expression-component doc:name="Set payload geoserverReq HashMap"><![CDATA[payload = new java.util.HashMap();
+payload.put("coveragestoreName", coverageName );
+payload.put("url", "file://"+wqm30OutLocalDir+fileName );
+payload.put("workspaceName", workspaceName);
+return payload;
+]]></expression-component>
+                    <logger message="Call Geoserver flow with #[payload]" level="INFO" doc:name="Call Geoserver flow"/>
+                    <flow-ref name="geoserverImageMosaicFlow" doc:name="geoserverImageMosaicFlow"/>
+                </when>
+                <otherwise>
+                    <logger message="#[fileName] is NOT Thematic, won't load in Geoserver" level="INFO" doc:name="No Thematic, No Geoserver"/>
+                </otherwise>
+            </choice>
+
+            
+            
+             <logger message="Prepare metadata for Geonetwork for #[fileName]" level="INFO" doc:name="Prepare metadata for Geonetwork"/>
+            <set-variable variableName="Prod_Type" value="#[new org.mule.module.json.JsonData('${wqmodis.prodtype}').get(noextFileName.split(&quot;_&quot;)[4]).toString()]" doc:name="Prod_Type"/>
+            <set-variable variableName="Par_Type" value="#[new org.mule.module.json.JsonData('${wqmodis.partype}').get(noextFileName.split(&quot;_&quot;)[2]).toString()]" doc:name="Par_Type"/>
+            <set-variable variableName="Res" value="1km" doc:name="Res"/>
+            <set-variable variableName="Res_Denominator" value="10000000" doc:name="Res_Denominator"/>
+
+            <set-variable variableName="Processing_Type" value="#[noextFileName.contains(&quot;P90&quot;) ? &quot;modis30P&quot; : &quot;modis30&quot;]" doc:name="Processing_Type"/>
+            <set-variable variableName="Publication_Date" value="#[ new java.text.SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ss&quot;).format(new java.util.Date())]" doc:name="Publication_Date"/>
+            <set-variable variableName="Creation_Date" value="#[Publication_Date]" doc:name="Creation_Date"/>
+            <set-variable variableName="Temporal_Extent" value="#[new org.mule.el.datetime.DateTime(date, &quot;yyyy-MM-dd&quot;).format(&quot;yyyy-MM-dd'T'HH:mm:ss&quot;) ]" doc:name="Temporal_Extent"/>
+            <logger message="Temp_Extent: #[Temporal_Extent] from #[noextFileName.split(&quot;_&quot;)[0]]" level="INFO" doc:name="Temp_Extent"/>
+            <set-variable variableName="geoserverPublic" value="${geoserver.public}" doc:name="geoserverPublic"/>
+            
+            
+            <http:request config-ref="HTTP_Geoserver_Request" path="workspaces/#[workspaceName]/coveragestores/#[coverageName]/coverages/#[coverageName].json" method="GET" doc:name="Req Bbox from Geoserver "/>
+            <object-to-string-transformer doc:name="Object to String"/>
+	        <json:object-to-json-transformer doc:name="Object to JSON"/>
+	
+	        <set-variable variableName="Extent_West" value="#[json:coverage/latLonBoundingBox/minx]" doc:name="Extent_West"/>
+	        <set-variable variableName="Extent_East" value="#[json:coverage/latLonBoundingBox/maxx]" doc:name="Extent_East"/>
+	        <set-variable variableName="Extent_South" value="#[json:coverage/latLonBoundingBox/miny]" doc:name="Extent_South"/>
+	        <set-variable variableName="Extent_North" value="#[json:coverage/latLonBoundingBox/maxy]" doc:name="Extent_North"/>
+	
+	        <parse-template location="Dataset_Template_ISO19139.xml" doc:name="Parse Template ISO19139"/>
+	        <object-to-string-transformer doc:name="Object to String"/>
+	        <expression-component doc:name="Set payload geonetworkReq HashMap"><![CDATA[String metadataXml = payload;
+payload = new java.util.HashMap();
+payload.put("type", Processing_Type);
+payload.put("metadataXml", metadataXml);
+return payload;]]></expression-component>
+	        <logger message="Call geonetwork flow #[payload]" level="INFO" doc:name="Call geonetwork flow"/>
+	        <flow-ref name="geonetworkFlow" doc:name="geonetworkFlow"/>
+
+	            
+        </foreach>
+    </flow>
+</mule>

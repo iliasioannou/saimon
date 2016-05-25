@@ -110,7 +110,6 @@ result = proxy.execute( moduleName, scriptName, payload)]]></scripting:script>
                     <set-variable variableName="wqModisReturnCode" value="1" doc:name="wqModisReturnCode"/>
                 </otherwise>
             </choice>
-
 			<set-payload doc:name="Set activitiSignalerFlow Request" value="{ &quot;executionId&quot;:&quot;#[executionId]&quot;,&quot;signalName&quot;:&quot;#[signalName]&quot;,&quot;vars&quot;:{&quot;result&quot;:&quot;#[wqModisReturnCode]&quot;} }"/>
             <flow-ref name="activitiSignalerFlow" doc:name="activitiSignalerFlow"/>
         </async>

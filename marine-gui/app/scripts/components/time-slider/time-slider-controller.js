@@ -13,6 +13,11 @@ angular.module('rheticus')
 		$scope.myDateMax = new Date();
 		$scope.myDateMin = new Date();
 		$scope.limitDate = "";
+		$scope.limitDate1 = "";
+		$scope.limitDate10 = "";
+		$scope.limitDate30 = "";
+		$scope.limitDate30P = "";
+
     $scope.currentDate=0;
 		$scope.layerFound=[];
 		//WATCH ALL OVERLAYS
@@ -51,10 +56,12 @@ angular.module('rheticus')
 			while(i<$scope.layerFound.length && !trovato){
 				if ($scope.layerFound[i].Name==="SST"){
 					trovato=true;
-					$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[0])+"-"+d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
+					$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
 				}
 				i++;
 			}
+			//UPDATE ALL LAST DATE MENU
+			$scope.updateMenuDate("SST");
 			//RESTART WITH CURRENT TYPE
 			$scope.restart(self.timeSlider);
 		}
@@ -70,10 +77,12 @@ angular.module('rheticus')
 			while(i<$scope.layerFound.length && !trovato){
 				if ($scope.layerFound[i].Name==="WT"){
 					trovato=true;
-					$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[0])+"-"+d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
+					$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
 				}
 				i++;
 			}
+			//UPDATE ALL LAST DATE MENU
+			$scope.updateMenuDate("WT");
 			//RESTART WITH CURRENT TYPE
 			$scope.restart(self.timeSlider);
 		}
@@ -89,10 +98,12 @@ angular.module('rheticus')
 			while(i<$scope.layerFound.length && !trovato){
 				if ($scope.layerFound[i].Name==="CHL"){
 					trovato=true;
-					$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[0])+"-"+d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
+					$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
 				}
 				i++;
 			}
+			//UPDATE ALL LAST DATE MENU
+			$scope.updateMenuDate("CHL");
 			//RESTART WITH CURRENT TYPE
 			$scope.restart(self.timeSlider);
 		}
@@ -100,12 +111,33 @@ angular.module('rheticus')
 	});
 
 	//WATCH CURRENTDATE (MODEL SLIDER) AND UPDATE INTERFACE
-  $scope.$watch("currentDate",function(currentDate){
+  $scope.$watch("currentDate",function(nameLayer){
       if($scope.arrayDataTimeCurrent){
         $scope.setSlider();
       }
 
 	});
+	//UPDATE MENU DATE WHEN CHANGING LAYER
+	$scope.updateMenuDate = function (nameLayer) {
+		var find=false;
+	  var i=0;
+		while(i<$scope.layerFound.length && !find){
+			var time=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
+			if($scope.layerFound[i].Name===nameLayer){
+				$scope.limitDate1=time;
+			}else if ($scope.layerFound[i].Name.indexOf(nameLayer+"10")>-1) {
+				$scope.limitDate10=time;
+			}
+			else if ($scope.layerFound[i].Name.indexOf(nameLayer+"30")>-1 && $scope.layerFound[i].Name.indexOf("P")===-1) {
+				$scope.limitDate30=time;
+			}
+			else if ($scope.layerFound[i].Name.indexOf(nameLayer+"30P")>-1) {
+				$scope.limitDate30P=time;
+				find=true;
+			}
+			i++;
+		}
+	}
 
 
 	//CALL GET CAPABILITIES AND WITH JQUERY EXTRACT AN ARRAY WITH ALL LAYER NAME AND DIMENSIONS
@@ -151,11 +183,11 @@ angular.module('rheticus')
 					var find=false;
 					i=0;
 					while(i<$scope.layerFound.length && !find){
+						var time=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
 						if($scope.layerFound[i].Name===nameLayer){
-							find=true;
 							console.log("Found"+$scope.layerFound[i].Name);
 							//RESET ALL
-							$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[0])+"-"+d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
+							$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
 							console.log($scope.limitDate);
 							$scope.currentDate=0;
 							document.getElementById('playButton').src="images/icons/play.png";
@@ -163,6 +195,18 @@ angular.module('rheticus')
 							$scope.filterWMSDate();
 							$scope.arrayDataTimeCurrent=$scope.arrayDataTime;
 							$scope.setSlider();
+							$scope.limitDate1=time;
+
+						}else if ($scope.layerFound[i].Name.indexOf(nameLayer+"10")>-1) {
+							$scope.limitDate10=time;
+						}
+						else if ($scope.layerFound[i].Name.indexOf(nameLayer+"30")>-1 && $scope.layerFound[i].Name.indexOf("P")===-1) {
+							$scope.limitDate30=time;
+						}
+						else if ($scope.layerFound[i].Name.indexOf(nameLayer+"30P")>-1) {
+							console.log("dentro");
+							$scope.limitDate30P=time;
+							find=true;
 						}
 						i++;
 					}
@@ -293,21 +337,25 @@ angular.module('rheticus')
 	$scope.dailySlider=function () {
 				self.timeSlider = "dailySlider";
 				$scope.restart("dailySlider");
+				document.getElementById('listTypeButton').src="images/icons/1.png"
 	};
 
 	$scope.tenDaysSlider=function () {
 				self.timeSlider = "tenDaysSlider";
 				$scope.restart("tenDaysSlider");
+				document.getElementById('listTypeButton').src="images/icons/10.png"
 	};
 
 	$scope.monthSlider=function () {
 				self.timeSlider = "monthSlider";
 				$scope.restart("monthSlider");
+				document.getElementById('listTypeButton').src="images/icons/30.png"
 	};
 
 	$scope.month90Slider=function () {
 				self.timeSlider = "month90Slider";
 				$scope.restart("month90Slider");
+				document.getElementById('listTypeButton').src="images/icons/30p.png"
 	};
 
 	//CREATE ARRAY WITH NAME LAYERS AND CORRISPECTIVE TIME DIMENSION

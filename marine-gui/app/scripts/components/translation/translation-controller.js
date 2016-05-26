@@ -36,11 +36,15 @@
     'helpSettings':'Help',
     'descriptionHelpSettings':'Go to help',
     'optionsSlider':'Options',
-    'periodSlider':'Period: ',
+    'periodSlider':'Last update: ',
     'dailySlider':'Daily',
     'tenDaysSlider':'10 Days',
     'monthSlider':'Monthly',
     'month90Slider':'Monthly 90° percentile',
+    'dailyItemUpdate':'Last daily update: ',
+    'tenItemUpdate':'Last decadic update: ',
+    'monthlyItemUpdate':'Last monthly update: ',
+    'monthly90ItemUpdate':'Last monthly percentile update: ',
     'FOO': 'This is a paragraph'
   });
 
@@ -78,11 +82,15 @@
       'helpSettings':'Βοήθεια',
       'descriptionHelpSettings':'Mεταβείτε στην βοήθεια',
       'optionsSlider':'επιλογές',
-      'periodSlider':'περίοδος: ',
+      'periodSlider':'',
       'dailySlider':'καθημερινά',
       'tenDaysSlider':'10 ημέρες',
       'monthSlider':'μηνιαίος',
       'month90Slider':'μηνιαίος 90° εκατοστημόριο',
+      'dailyItemUpdate':'Last daily update: ',
+      'tenItemUpdate':'Last ten days update: ',
+      'monthlyItemUpdate':'Last monthly update: ',
+      'monthly90ItemUpdate':'Last monthly percentile update: ',
       'FOO': 'Αυτή είναι μια παράγραφος'
     });
 
@@ -121,11 +129,15 @@
     'helpSettings':'Aiuto',
     'descriptionHelpSettings':'Visualizza aiuto',
     'optionsSlider':'Opzioni',
-    'periodSlider':'Periodo: ',
+    'periodSlider':'Ultimo aggiornamento: ',
     'dailySlider':'Giornaliero',
     'tenDaysSlider':'10 giorni',
     'monthSlider':'Mensile',
     'month90Slider':'Mensile 90° percentile',
+    'dailyItemUpdate':'Ultimo aggiornamento giornaliero: ',
+    'tenItemUpdate':'Ultimo aggiornamento della decade: ',
+    'monthlyItemUpdate':'Ultimo aggiornamento mensile: ',
+    'monthly90ItemUpdate':'Ultimo aggiornamento mensile 90°percentile: ',
     'FOO': 'This is a paragraph'
   });
 

@@ -9,34 +9,34 @@
       </md-slider>
       <md-menu >
           <md-button style="margin-left:15px;" aria-label="{{ 'optionsSlider' | translate }}" title="{{ 'optionsSlider' | translate }}" class="md-icon-button" ng-click="$mdOpenMenu($event)">
-            <img  src="images/icons/list.png" alt="Logo" width="25" height="25" style="cursor: pointer;" ng-click="">
+            <img id="listTypeButton" src="images/icons/1.png" alt="Logo" width="32" height="32" style="cursor: pointer;margin:-5px" ng-click="">
           </md-button>
           <md-menu-content width="4">
-            <div layout="row" layout-align="center" style="background-color:#003a57;">
-              <h2 style="font-size:15px;font-weight:bold;color:#ffffff;">{{ 'periodSlider' | translate }} {{limitDate}}</h2>
+            <div layout="row" layout-align="center center" style="background-color:#003a57;">
+              <p style="margin:13px; font-size:15px;font-weight:bold;color:#ffffff;">{{ 'periodSlider' | translate }} {{limitDate}}</p>
             </div>
-            <md-menu-item >
+            <md-menu-item id="dailyItem" title="{{ 'dailyItemUpdate' | translate }} {{limitDate1}}">
               <md-button ng-click="dailySlider()">
                   <div layout="row">
                     <p flex="">{{ 'dailySlider' | translate }}</p>
                   </div>
               </md-button>
             </md-menu-item>
-            <md-menu-item >
+            <md-menu-item id="tenItem" title="{{ 'tenItemUpdate' | translate }} {{limitDate10}}">
               <md-button ng-click="tenDaysSlider()">
                   <div layout="row">
                     <p flex="">{{ 'tenDaysSlider' | translate }}</p>
                   </div>
               </md-button>
             </md-menu-item>
-            <md-menu-item >
+            <md-menu-item id="monthlyItem" title="{{ 'monthlyItemUpdate' | translate }} {{limitDate30}}">
               <md-button ng-click="monthSlider()">
                   <div layout="row">
                     <p flex="">{{ 'monthSlider' | translate }}</p>
                   </div>
               </md-button>
             </md-menu-item>
-            <md-menu-item >
+            <md-menu-item id="monthly90Item" title="{{ 'monthly90ItemUpdate' | translate }} {{limitDate30P}}">
               <md-button ng-click="month90Slider()">
                   <div layout="row">
                     <p flex="">{{ 'month90Slider' | translate }}</p>

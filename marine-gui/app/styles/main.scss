@@ -124,6 +124,17 @@ body {
 }
 
 
+.mouseposition {
+    border-radius: 25px;
+    position: absolute;
+    right: 8px;
+    top: 65px;
+    color:#fff;
+    font-size: 10px;
+    z-index: 1;
+}
+
+
 /* Overrides */
 md-backdrop.md-sidenav-backdrop {
     background-color:transparent

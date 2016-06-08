@@ -283,6 +283,19 @@ md-menu-content {
 	margin: 1px;
 }
 
+.currentView {
+    position: fixed;
+    z-index: 1;
+    top: 65px;
+    left: 8px;
+	  min-width: 180px;
+	  height: 75px;
+    border-radius: 4px;
+    padding: 2px;
+    background-color: rgba(0, 60, 136, 0.6);
+	margin: 1px;
+}
+
 
 .timeSliderPlayer {
   background-color: rgba(255, 255, 255, 0);

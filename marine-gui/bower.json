@@ -42,11 +42,6 @@
         "dist/angular-flash.min.css",
         "dist/angular-flash.min.js"
       ]
-    },
-    "chardin.js": {
-      "main": [
-        "chardinjs.min.js"
-      ]
     }
   },
   "resolutions": {

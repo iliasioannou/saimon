@@ -4,7 +4,7 @@
 
   <div hide-xs class="timeSlider">
     <md-item-content layout="row" layout-align="center center" style="margin-left:60px">
-      <span id="currentTimeSlider" style="font-weight:bold;margin-right:80px;margin-top:20px"></span>
+      <span style="font-weight:bold;margin-right:80px;margin-top:20px">{{timeSlider.currentTimeSlider}}</span>
       <md-slider id="slider" flex="" step="1" min="{{timeSlider.minSlider}}" max="{{timeSlider.maxSlider}}" ng-model="currentDate" aria-label="red"  class="md-primary">
       </md-slider>
       <md-menu >
@@ -58,6 +58,19 @@
         </md-item-content>
       <div>
     <div>
+
+
+    <div class="currentView">
+
+  		<div style="margin:5px;">
+        <!--md-item-content layout="row" layout-align="center">
+  			     <p style="font-weight:bold;color:#ffffff;">{{'currentView' | translate}}</p><br>
+        </md-item-content-->
+  			<span style="margin-top:5px;color:#ffffff;">{{'Type'|translate}}: {{timeSlider.currentTypeName}}</span><br>
+  			<span style="margin-top:5px;color:#ffffff;">{{'Mode'|translate}}: {{timeSlider.nameTimeSlider}}</span><br>
+        <span style="margin-top:5px;color:#ffffff;">{{'Date'|translate}}: {{timeSlider.currentTimeSlider}}</span>
+  		</div>
+  	</div>
 
 
 <div>

@@ -31,8 +31,30 @@ angular.module('rheticus')
 				"wt" : $scope.getOverlayParams("wt"),
 				"maxSlider": 0,
 				"minSlider": 0,
-				"timeSlider": "dailySlider"
+				"nameTimeSlider": "",
+				"timeSlider": "dailySlider",
+				"currentDateFormat": "",
+				"currentType":"chl",
+				"currentTypeName":""
 		});
+
+		//UPDATE CURRENTVIEW TRANSLATIONS WHEN CLICK NEW LANGUAGE
+			$rootScope.$on('$translateChangeSuccess', function (){
+				$translate(self.timeSlider).then(function (translation) {
+					self.nameTimeSlider = translation;
+				});
+				$translate(self.currentType).then(function (translation) {
+					self.currentTypeName = translation;
+				});
+	    });
+
+		//INITIALIZE CURRENTVIEW
+			$translate('dailySlider').then(function (translation) {
+				self.nameTimeSlider = translation;
+			});
+			$translate('chl').then(function (translation) {
+				self.currentTypeName = translation;
+			});
 
 
 	//update values on login change status
@@ -60,6 +82,10 @@ angular.module('rheticus')
 				}
 				i++;
 			}
+			self.currentType='sst',
+			$translate('sst').then(function (translation) {
+				self.currentTypeName = translation;
+			});
 			//UPDATE ALL LAST DATE MENU
 			$scope.updateMenuDate("SST");
 			//RESTART WITH CURRENT TYPE
@@ -70,7 +96,7 @@ angular.module('rheticus')
 	//WATCH WT
 	$scope.$watch("overlayForWatch[1].visible",function(value){
 			if (value && $scope.layerFound.length>0){
-			console.log("attivo WT: "+$scope.overlayForWatch[1].source.params.LAYERS);
+			//console.log("attivo WT: "+$scope.overlayForWatch[1].source.params.LAYERS);
 			//SET MENU PERIOD
 			var i =0;
 			var trovato=false;
@@ -81,6 +107,10 @@ angular.module('rheticus')
 				}
 				i++;
 			}
+			self.currentType='wt',
+			$translate('wt').then(function (translation) {
+				self.currentTypeName = translation;
+			});
 			//UPDATE ALL LAST DATE MENU
 			$scope.updateMenuDate("WT");
 			//RESTART WITH CURRENT TYPE
@@ -91,7 +121,7 @@ angular.module('rheticus')
 	//WATCH CHL
 	$scope.$watch("overlayForWatch[2].visible",function(value){
 		if (value && $scope.layerFound.length>0){
-			console.log("attivo CHL: "+$scope.overlayForWatch[2].source.params.LAYERS);
+			//console.log("attivo CHL: "+$scope.overlayForWatch[2].source.params.LAYERS);
 			//SET MENU PERIOD
 			var i =0;
 			var trovato=false;
@@ -102,6 +132,10 @@ angular.module('rheticus')
 				}
 				i++;
 			}
+			self.currentType='chl',
+			$translate('chl').then(function (translation) {
+				self.currentTypeName = translation;
+			});
 			//UPDATE ALL LAST DATE MENU
 			$scope.updateMenuDate("CHL");
 			//RESTART WITH CURRENT TYPE
@@ -179,16 +213,16 @@ angular.module('rheticus')
 							});
 						}
 					}
-					console.log($scope.layerFound);
+					//console.log($scope.layerFound);
 					var find=false;
 					i=0;
 					while(i<$scope.layerFound.length && !find){
 						var time=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
 						if($scope.layerFound[i].Name===nameLayer){
-							console.log("Found"+$scope.layerFound[i].Name);
+							//console.log("Found"+$scope.layerFound[i].Name);
 							//RESET ALL
 							$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
-							console.log($scope.limitDate);
+							//console.log($scope.limitDate);
 							$scope.currentDate=0;
 							document.getElementById('playButton').src="images/icons/play.png";
 							$scope.arrayDataTime=$scope.layerFound[i].Dimension;
@@ -204,7 +238,6 @@ angular.module('rheticus')
 							$scope.limitDate30=time;
 						}
 						else if ($scope.layerFound[i].Name.indexOf(nameLayer+"30P")>-1) {
-							console.log("dentro");
 							$scope.limitDate30P=time;
 							find=true;
 						}
@@ -249,11 +282,10 @@ angular.module('rheticus')
 				$scope.arrayDataTime=correctDate;
 				if(correctDate.length!==0){
 	        self.maxSlider=$scope.arrayDataTime.length-1;
-					//console.log(d3.time.format("%d/%m/%Y")($scope.arrayDataTime[0]));
-					document.getElementById('currentTimeSlider').innerHTML=d3.time.format("%d/%m/%Y")($scope.arrayDataTime[0]);
+					self.currentTimeSlider=d3.time.format("%d/%m/%Y")($scope.arrayDataTime[0]);
 				}else{
 	        self.maxSlider=0;
-					document.getElementById('currentTimeSlider').innerHTML="";
+					self.currentTimeSlider="";
 				}
 		};
 
@@ -262,7 +294,7 @@ angular.module('rheticus')
 	$scope.statusSlider=false;
 	$scope.loopSlider= function() {
 			if($scope.statusSlider){
-				console.log("startLoop");
+				//console.log("startLoop");
 				if($scope.currentDate<$scope.arrayDataTimeCurrent.length-1){
 					$scope.currentDate++;
 					$scope.setSlider();
@@ -287,9 +319,9 @@ angular.module('rheticus')
 			}else {
 				$scope.currentDate=0;
 				if($scope.arrayDataTimeCurrent[$scope.currentDate]!==undefined){
-					document.getElementById('currentTimeSlider').innerHTML=d3.time.format("%d/%m/%Y")($scope.arrayDataTimeCurrent[$scope.currentDate]);
+					self.currentTimeSlider=d3.time.format("%d/%m/%Y")($scope.arrayDataTimeCurrent[$scope.currentDate]);
 				}else{
-					document.getElementById('currentTimeSlider').innerHTML="";
+					self.currentTimeSlider="";
 				}
 				$scope.statusSlider=false;
 				$timeout($scope.loopSlider, 500);
@@ -324,36 +356,49 @@ angular.module('rheticus')
 				self.sst.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
 				self.wt.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
 				if($scope.arrayDataTimeCurrent[$scope.currentDate]!==undefined){
-					document.getElementById('currentTimeSlider').innerHTML=d3.time.format("%d/%m/%Y")($scope.arrayDataTimeCurrent[$scope.currentDate]);
+					self.currentTimeSlider=d3.time.format("%d/%m/%Y")($scope.arrayDataTimeCurrent[$scope.currentDate]);
 					if(document.getElementById('playButton').src.indexOf("images/icons/stop.png")>-1){
 						document.getElementById('playButton').src="images/icons/play.png";
 					}
 				}else{
-					document.getElementById('currentTimeSlider').innerHTML="";
+					self.currentTimeSlider="";
 				}
 	};
 
  //THIS FUNCTIONS ARE CALLED BY TIME TYPE CHANGE.
 	$scope.dailySlider=function () {
 				self.timeSlider = "dailySlider";
+				$translate('dailySlider').then(function (translation) {
+					self.nameTimeSlider = translation;
+				});
+
 				$scope.restart("dailySlider");
 				document.getElementById('listTypeButton').src="images/icons/1.png"
 	};
 
 	$scope.tenDaysSlider=function () {
 				self.timeSlider = "tenDaysSlider";
+				$translate('tenDaysSlider').then(function (translation) {
+					self.nameTimeSlider = translation;
+				});
 				$scope.restart("tenDaysSlider");
 				document.getElementById('listTypeButton').src="images/icons/10.png"
 	};
 
 	$scope.monthSlider=function () {
 				self.timeSlider = "monthSlider";
+				$translate('monthSlider').then(function (translation) {
+					self.nameTimeSlider = translation;
+				});
 				$scope.restart("monthSlider");
 				document.getElementById('listTypeButton').src="images/icons/30.png"
 	};
 
 	$scope.month90Slider=function () {
 				self.timeSlider = "month90Slider";
+				$translate('month90Slider').then(function (translation) {
+					self.nameTimeSlider = translation;
+				});
 				$scope.restart("month90Slider");
 				document.getElementById('listTypeButton').src="images/icons/30p.png"
 	};
@@ -361,7 +406,7 @@ angular.module('rheticus')
 	//CREATE ARRAY WITH NAME LAYERS AND CORRISPECTIVE TIME DIMENSION
 	$scope.getDimensionAfterCapabilities= function () {
 				var currentOverlay=$scope.getCurrentCategory();
-				console.log(currentOverlay);
+				//console.log(currentOverlay);
 				var i =0;
 				var trovato=false;
 				while(i<$scope.layerFound.length && !trovato){
@@ -372,7 +417,7 @@ angular.module('rheticus')
 				}
 
 				if(trovato){
-					console.log($scope.layerFound[i-1].Dimension);
+					//console.log($scope.layerFound[i-1].Dimension);
 					return $scope.layerFound[i-1].Dimension;
 				}else{
 					return [];
@@ -399,7 +444,7 @@ angular.module('rheticus')
 
 	//RESTART THE CURRENT LAYER WITH NEW TIME TYPE.
 	$scope.restart=function (type) {
-				console.log("restart");
+				//console.log("restart");
 				//RESET ALL
 				$scope.setOverlaysToType(type);
 				//CALCULATE NEW LAYER DIMENSION AND SET MAXSLIDER
@@ -436,7 +481,7 @@ angular.module('rheticus')
 
 	//SET ALL LAYERS TO THE INPUT TYPE USING MAPPING IN COMMON.JS
 	$scope.setOverlaysToType=function (type) {
-				console.log("setOverlaysToType with type:"+type);
+				//console.log("setOverlaysToType with type:"+type);
 				var overlays=$scope.getOverlays();
 				for (var i=0;i<overlays.length;i++){
 					eval("overlays[i].source.params.LAYERS=configuration."+overlays[i].name+"."+type); // jshint ignore:line
@@ -449,7 +494,7 @@ angular.module('rheticus')
 					var layers = map.getLayers();
 	        layers.forEach(function(layer) {
 	          if (layer.get('name') === 'Overlays') {
-							console.log((layer.getLayers().getArray())[2].get('name'));
+							//console.log((layer.getLayers().getArray())[2].get('name'));
 									for (var i = 0; i < (layer.getLayers().getArray()).length; i++) {
 											if((layer.getLayers().getArray())[i].get('name')==='SST' || (layer.getLayers().getArray())[i].get('name')==='WT' || (layer.getLayers().getArray())[i].get('name')==='CHL'){
 												var source=(layer.getLayers().getArray())[i].getSource();

@@ -40,6 +40,7 @@ angular.module('rheticus')
 
 		//UPDATE CURRENTVIEW TRANSLATIONS WHEN CLICK NEW LANGUAGE
 			$rootScope.$on('$translateChangeSuccess', function (){
+				$rootScope.$broadcast("setOverlaysClosure");
 				$translate(self.timeSlider).then(function (translation) {
 					self.nameTimeSlider = translation;
 				});
@@ -61,6 +62,7 @@ angular.module('rheticus')
 	$rootScope.$watch("login.details", function () {
 			$scope.statusSlider=false;
 			document.getElementById('playButton').src="images/icons/play.png";
+			document.getElementById('playButtonMin').src="images/icons/play.png";
 			$scope.currentDate=0;
 	  	$scope.getMinMaxDateDeals();
 			$scope.getDateFromCapabilities("CHL");
@@ -225,6 +227,7 @@ angular.module('rheticus')
 							//console.log($scope.limitDate);
 							$scope.currentDate=0;
 							document.getElementById('playButton').src="images/icons/play.png";
+							document.getElementById('playButtonMin').src="images/icons/play.png";
 							$scope.arrayDataTime=$scope.layerFound[i].Dimension;
 							$scope.filterWMSDate();
 							$scope.arrayDataTimeCurrent=$scope.arrayDataTime;
@@ -299,8 +302,6 @@ angular.module('rheticus')
 					$scope.currentDate++;
 					$scope.setSlider();
 					$timeout($scope.loopSlider, 3000);
-				}else{
-					document.getElementById('playButton').src="images/icons/stop.png";
 				}
 			}
 	}
@@ -308,14 +309,16 @@ angular.module('rheticus')
 
 	//START SLIDER PLAY AND CHANGE INTERFACE
 	$scope.playSlider= function() {
-			if(document.getElementById('playButton').src.indexOf("play.png")>-1){
+			if(document.getElementById('playButton').src.indexOf("play.png")>-1 && document.getElementById('playButtonMin').src.indexOf("play.png")>-1){
 				document.getElementById('playButton').src="images/icons/pause.png";
+				document.getElementById('playButtonMin').src="images/icons/pause.png";
 				$scope.statusSlider=true;
 				$timeout($scope.loopSlider, 500);
-			}else if(document.getElementById('playButton').src.indexOf("pause.png")>-1){
+			}else if(document.getElementById('playButton').src.indexOf("pause.png")>-1 && document.getElementById('playButtonMin').src.indexOf("pause.png")>-1){
 				$scope.statusSlider=false;
 				$timeout($scope.loopSlider, 500);
 				document.getElementById('playButton').src="images/icons/play.png";
+				document.getElementById('playButtonMin').src="images/icons/play.png";
 			}else {
 				$scope.currentDate=0;
 				if($scope.arrayDataTimeCurrent[$scope.currentDate]!==undefined){
@@ -326,6 +329,7 @@ angular.module('rheticus')
 				$scope.statusSlider=false;
 				$timeout($scope.loopSlider, 500);
 				document.getElementById('playButton').src="images/icons/play.png";
+				document.getElementById('playButtonMin').src="images/icons/play.png";
 			}
 	};
 
@@ -352,13 +356,19 @@ angular.module('rheticus')
 	//UPDATE INTERFACE WITH THE CURRENT DATE AND UPDATE TIME PARAMS IN ALL OVERLAYS
   $scope.setSlider= function() {
 				//console.log("setSlider");
+				$rootScope.$broadcast("setOverlaysClosure");
 				self.chl.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
 				self.sst.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
 				self.wt.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
 				if($scope.arrayDataTimeCurrent[$scope.currentDate]!==undefined){
 					self.currentTimeSlider=d3.time.format("%d/%m/%Y")($scope.arrayDataTimeCurrent[$scope.currentDate]);
-					if(document.getElementById('playButton').src.indexOf("images/icons/stop.png")>-1){
+					if(document.getElementById('playButton').src.indexOf("images/icons/stop.png")>-1 && document.getElementById('playButtonMin').src.indexOf("images/icons/stop.png")>-1){
 						document.getElementById('playButton').src="images/icons/play.png";
+						document.getElementById('playButtonMin').src="images/icons/play.png";
+					}
+					if($scope.currentDate===$scope.arrayDataTimeCurrent.length-1){
+						document.getElementById('playButton').src="images/icons/stop.png";
+						document.getElementById('playButtonMin').src="images/icons/stop.png";
 					}
 				}else{
 					self.currentTimeSlider="";
@@ -374,6 +384,7 @@ angular.module('rheticus')
 
 				$scope.restart("dailySlider");
 				document.getElementById('listTypeButton').src="images/icons/1.png"
+				document.getElementById('listTypeButtonMin').src="images/icons/1.png"
 	};
 
 	$scope.tenDaysSlider=function () {
@@ -383,6 +394,7 @@ angular.module('rheticus')
 				});
 				$scope.restart("tenDaysSlider");
 				document.getElementById('listTypeButton').src="images/icons/10.png"
+				document.getElementById('listTypeButtonMin').src="images/icons/10.png"
 	};
 
 	$scope.monthSlider=function () {
@@ -392,6 +404,7 @@ angular.module('rheticus')
 				});
 				$scope.restart("monthSlider");
 				document.getElementById('listTypeButton').src="images/icons/30.png"
+				document.getElementById('listTypeButtonMin').src="images/icons/30.png"
 	};
 
 	$scope.month90Slider=function () {
@@ -401,6 +414,7 @@ angular.module('rheticus')
 				});
 				$scope.restart("month90Slider");
 				document.getElementById('listTypeButton').src="images/icons/30p.png"
+				document.getElementById('listTypeButtonMin').src="images/icons/30p.png"
 	};
 
 	//CREATE ARRAY WITH NAME LAYERS AND CORRISPECTIVE TIME DIMENSION
@@ -464,6 +478,7 @@ angular.module('rheticus')
 					}
 					//FILTER DATE BY USER CONTRACT AND RESET INTERFACE
 					document.getElementById('playButton').src="images/icons/play.png";
+					document.getElementById('playButtonMin').src="images/icons/play.png";
 					$scope.arrayDataTime=dimension;
 					$scope.filterWMSDate();
 					$scope.arrayDataTimeCurrent=$scope.arrayDataTime;

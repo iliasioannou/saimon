@@ -1,0 +1,25 @@
+<div class="featureInfo" ng-show="features.show_features" ng-controller="FeatureInfoCtrl as features" >
+				<!--NAME LAYER -->
+				<md-toolbar>
+			    <div class="md-toolbar-tools">
+						<span flex></span>
+			      <h2>{{ 'titleFeatureInfo' | translate }}</h2>
+						<span flex=""></span>
+						<a class="close" ng-click="features.showFeatures(false);">&times;</a>
+			    </div>
+			  </md-toolbar>
+
+				<div id="content" style="margin:10px;">
+							<b style="color:#000000;" >{{'Type' | translate}}:</b>
+							<span style="color:#000000;" >{{features.currentTypeName}}</span>
+							<br>
+							<b style="color:#000000;" >{{'Mode' | translate}}:</b>
+							<span style="color:#000000;" >{{features.nameTimeSlider}}</span>
+							<br>
+							<b style="color:#000000;" >{{'Date' | translate}}:</b>
+							<span style="color:#000000;" >{{features.currentTimeSlider}}</span>
+							<br>
+							<b style="color:#000000;" >{{'Value' | translate}}:</b>
+							<span style="color:#000000;" >{{features.valueInfo}}</span>
+			 </div>
+</div>

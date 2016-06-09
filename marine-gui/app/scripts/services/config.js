@@ -5,7 +5,7 @@ angular
 	.constant('configuration', {
 		//common environment configuration
 		rheticusHeaderImage : "./images/RheticusLogo.png",
-		map : {"center":{"lon":20.4,"lat":39.1,"zoom":8,"bounds":[],"projection":"EPSG:4326"},"query":{"zoom":7},"crs":"EPSG:3857"},
+		map : {"center":{"lon":20.4,"lat":39.1,"zoom":8,"bounds":[],"projection":"EPSG:4326"},"view":{"projection":"EPSG:3857","maxZoom":19,"minZoom":3},"query":{"zoom":7},"crs":"EPSG:3857"},
 		dataProviders : [{"name":" Sentinel","checked":true},{"name":" Cosmo","checked":true},{"name":" TerraSAR-X","checked":true}],
 		geocoder : {"url":"http://nominatim.openstreetmap.org/search?q=","params":"&limit=5&format=json&accept-language=en&polygon_geojson=1","paramsReverse":"&limit=1&format=json&zoom=18&accept-language=en","urlReverse":"http://nominatim.openstreetmap.org/reverse?"},
 		//custom environment configuration

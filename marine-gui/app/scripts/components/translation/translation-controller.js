@@ -54,6 +54,7 @@
     'tenItemUpdate':'Last decadic update: ',
     'monthlyItemUpdate':'Last monthly update: ',
     'monthly90ItemUpdate':'Last monthly percentile update: ',
+    'titleFeatureInfo':'Result',
     'FOO': 'This is a paragraph'
   });
 
@@ -109,6 +110,7 @@
       'tenItemUpdate':'Τελευταία δεκαήμερη ενημέρωση: ',
       'monthlyItemUpdate':'Τελευταία μηνιαία ενημέρωση: ',
       'monthly90ItemUpdate':'Τελευταία ανανέωση μηνιαίας εκατοστιαίας θέσης: ',
+      'titleFeatureInfo':'Αποτέλεσμα',
       'FOO': 'Αυτή είναι μια παράγραφος'
     });
 
@@ -165,6 +167,7 @@
     'tenItemUpdate':'Ultimo aggiornamento della decade: ',
     'monthlyItemUpdate':'Ultimo aggiornamento mensile: ',
     'monthly90ItemUpdate':'Ultimo aggiornamento mensile 90°percentile: ',
+    'titleFeatureInfo':'Risultato',
     'FOO': 'This is a paragraph'
   });
 

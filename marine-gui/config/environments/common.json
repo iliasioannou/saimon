@@ -8,6 +8,11 @@
 			"bounds": [],
   		"projection": "EPSG:4326"
 		},
+		"view" : {
+				"projection" : "EPSG:3857",
+				"maxZoom": 19,
+				"minZoom": 3
+		},
 		"query" : {
 			"zoom" : 7
 		},

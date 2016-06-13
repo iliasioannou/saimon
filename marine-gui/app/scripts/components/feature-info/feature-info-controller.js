@@ -8,7 +8,7 @@
  * Feature Controller for rheticus project
  */
 angular.module('rheticus')
-	.controller('FeatureInfoCtrl',['$rootScope','$scope','ArrayService','Flash','$timeout',function($rootScope,$scope,ArrayService,Flash,$timeout){
+	.controller('FeatureInfoCtrl',['$rootScope','$scope','ArrayService','Flash','$timeout','$translate',function($rootScope,$scope,ArrayService,Flash,$timeout,$translate){
 
 		var self = this; //this controller
 		//WATCH ALL OVERLAYS
@@ -39,7 +39,7 @@ angular.module('rheticus')
 			}
 		});
 
-		
+
 		/**
 		 * WATCHERS
 		 */
@@ -56,7 +56,16 @@ angular.module('rheticus')
 			}
 			if(overlayResponse){
 				if (overlayResponse.features && (overlayResponse.features!==null) && (overlayResponse.features.length>0)) {
-					self.valueInfo=overlayResponse.features[0].properties.BLUE_BAND;
+					if(overlayResponse.features[0].properties.RED_BAND!==-11 && overlayResponse.features[0].properties.RED_BAND!==-10){
+						self.valueInfo=Math.round(overlayResponse.features[0].properties.RED_BAND*1000)/1000+" "+overlayResponse.unit ;
+					}
+					else{
+						console.log("enter");
+						$translate("noData").then(function (translation) {
+							console.log("value"+translation);
+							self.valueInfo = translation;
+						});
+					}
 					self.showFeatures(true);
 				} else {
 					self.showFeatures(false);

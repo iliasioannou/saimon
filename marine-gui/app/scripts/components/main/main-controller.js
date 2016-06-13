@@ -421,7 +421,8 @@ angular.module('rheticus')
 							Flash.dismiss();
 							var obj = {
 								"point" : ol.proj.toLonLat(coordinate,configuration.map.view.projection), // jshint ignore:line
-								"features" : (response.features.length>0) ? response.features : null
+								"features" : (response.features.length>0) ? response.features : null,
+								"unit": olLayer.unit
 							};
 							if (resultObj!==""){
 								eval("that."+resultObj+" = obj;"); // jshint ignore:line

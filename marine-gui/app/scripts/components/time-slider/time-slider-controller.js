@@ -17,9 +17,11 @@ angular.module('rheticus')
 		$scope.limitDate10 = "";
 		$scope.limitDate30 = "";
 		$scope.limitDate30P = "";
-
     $scope.currentDate=0;
 		$scope.layerFound=[];
+		$scope.pickerOptions = {
+	    "showWeeks": false
+	  };
 		//WATCH ALL OVERLAYS
 		$scope.overlayForWatch = $scope.getOverlays();
 
@@ -35,7 +37,11 @@ angular.module('rheticus')
 				"timeSlider": "dailySlider",
 				"currentDateFormat": "",
 				"currentType":"chl",
-				"currentTypeName":""
+				"currentTypeName":"",
+				"showCalendar":false,
+				"showCalendarView":function () {
+					self.showCalendar=!self.showCalendar;
+				}
 		});
 
 		//UPDATE CURRENTVIEW TRANSLATIONS WHEN CLICK NEW LANGUAGE
@@ -69,6 +75,31 @@ angular.module('rheticus')
 			$scope.countMin=false;
 			$scope.countMax=false;
 	});
+
+	$scope.$watch("datePicker",function(value){
+			if(value){
+				var i =0;
+				var found=false;
+				console.log("time"+value);
+				while (i < $scope.arrayDataTimeCurrent.length && !found) {
+					console.log($scope.arrayDataTimeCurrent[i]);
+					if(value<=$scope.arrayDataTimeCurrent[i]){
+						found=true;
+						$scope.currentDate=i;
+						console.log("trovato: "+i);
+					}
+					i++;
+				}
+				if(!found){
+					$translate("noData").then(function (translation) {
+						Flash.create("warning", translation);
+					});
+				}
+			}
+
+
+	});
+
 
 	//WATCH SST
 	$scope.$watch("overlayForWatch[0].visible",function(value){

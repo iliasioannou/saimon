@@ -56,6 +56,7 @@
     'monthlyItemUpdate':'Last monthly update: ',
     'monthly90ItemUpdate':'Last monthly percentile update: ',
     'titleFeatureInfo':'Result',
+    'selectDate':'Select a Date',
     'FOO': 'This is a paragraph'
   });
 
@@ -171,6 +172,7 @@
     'monthlyItemUpdate':'Ultimo aggiornamento mensile: ',
     'monthly90ItemUpdate':'Ultimo aggiornamento mensile 90°percentile: ',
     'titleFeatureInfo':'Risultato',
+    'selectDate':'Seleziona una data',
     'FOO': 'This is a paragraph'
   });
 

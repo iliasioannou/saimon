@@ -4,7 +4,7 @@
 
   <div hide-xs class="timeSlider">
     <md-item-content layout="row" layout-align="center center" style="margin-left:60px">
-      <span style="font-weight:bold;margin-right:80px;margin-top:20px">{{timeSlider.currentTimeSlider}}</span>
+      <span ng-click="timeSlider.showCalendarView()" style="font-weight:bold;margin-right:80px;margin-top:20px">{{timeSlider.currentTimeSlider}}</span>
       <md-slider id="slider" flex="" step="1" min="{{timeSlider.minSlider}}" max="{{timeSlider.maxSlider}}" ng-model="currentDate" aria-label="red"  class="md-primary">
       </md-slider>
       <md-menu >
@@ -121,6 +121,16 @@
         </md-item-content>
     </div>
 
-
+    <div hide-xs ng-show="timeSlider.showCalendar" class="calendarSliderPlayer">
+      <md-toolbar>
+        <div class="md-toolbar-tools">
+          <span flex></span>
+          <h2>{{ 'selectDate' | translate }}</h2>
+          <span flex=""></span>
+          <a class="close" ng-click="timeSlider.showCalendarView()">&times;</a>
+        </div>
+      </md-toolbar>
+      <uib-datepicker ng-model="datePicker"  show-weeks=false ></uib-datepicker>
+    </div>
 
 </div>

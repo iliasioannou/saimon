@@ -19,10 +19,44 @@ angular.module('rheticus')
 		$scope.limitDate30P = "";
     $scope.currentDate=0;
 		$scope.layerFound=[];
+
+
+		//DATEPICKER SETTINGS
+		$scope.datePicker=null;
 		$scope.datepickerOptions = {
-	    "showWeeks": true,
-			"minDate":new Date()
+			"customClass":getDayClass,
+	    "showWeeks": false,
+			"minMode":"day",
+			"minDate":new Date(),
+			"maxDate":new Date()
 	  };
+		var getDayClassIndex=0;
+		function getDayClass(data) {
+			var date = data.date;
+			var mode = data.mode;
+			var dayToCheck = new Date(date);
+			dayToCheck.setHours(2,0,0,0);
+			var classe="";
+
+			if($scope.arrayDataTimeCurrent){
+							var found=false;
+							var i=0 ;
+							while (i < $scope.arrayDataTimeCurrent.length && !found) {
+								if(dayToCheck.getTime()==$scope.arrayDataTimeCurrent[i].getTime()){
+									found=true;
+								}
+								i++;
+							}
+							$scope.arrayDataTimeCurrent[i];
+							if(found){
+								classe= "foundedProductPickerFound";
+								//console.log($scope.arrayDataTimeCurrent[getDayClassIndex]);
+							}
+
+			}
+			return classe;
+	  }
+
 		//WATCH ALL OVERLAYS
 		$scope.overlayForWatch = $scope.getOverlays();
 
@@ -81,13 +115,10 @@ angular.module('rheticus')
 			if(value){
 				var i =0;
 				var found=false;
-				console.log("time"+value);
 				while (i < $scope.arrayDataTimeCurrent.length && !found) {
-					console.log($scope.arrayDataTimeCurrent[i]);
 					if(value<=$scope.arrayDataTimeCurrent[i]){
 						found=true;
 						$scope.currentDate=i;
-						console.log("trovato: "+i);
 					}
 					i++;
 				}
@@ -263,6 +294,8 @@ angular.module('rheticus')
 							$scope.arrayDataTime=$scope.layerFound[i].Dimension;
 							$scope.filterWMSDate();
 							$scope.arrayDataTimeCurrent=$scope.arrayDataTime;
+							$scope.datepickerOptions.minDate=$scope.arrayDataTimeCurrent[0];
+							$scope.datepickerOptions.maxDate=$scope.arrayDataTimeCurrent[$scope.arrayDataTimeCurrent.length-1];
 							$scope.setSlider();
 							$scope.limitDate1=time;
 
@@ -409,6 +442,7 @@ angular.module('rheticus')
 
  //THIS FUNCTIONS ARE CALLED BY TIME TYPE CHANGE.
 	$scope.dailySlider=function () {
+				$scope.datepickerOptions.minMode="day";
 				self.timeSlider = "dailySlider";
 				$translate('dailySlider').then(function (translation) {
 					self.nameTimeSlider = translation;
@@ -420,6 +454,7 @@ angular.module('rheticus')
 	};
 
 	$scope.tenDaysSlider=function () {
+				$scope.datepickerOptions.minMode="day";
 				self.timeSlider = "tenDaysSlider";
 				$translate('tenDaysSlider').then(function (translation) {
 					self.nameTimeSlider = translation;
@@ -430,6 +465,7 @@ angular.module('rheticus')
 	};
 
 	$scope.monthSlider=function () {
+				$scope.datepickerOptions.minMode="month";
 				self.timeSlider = "monthSlider";
 				$translate('monthSlider').then(function (translation) {
 					self.nameTimeSlider = translation;
@@ -440,6 +476,7 @@ angular.module('rheticus')
 	};
 
 	$scope.month90Slider=function () {
+				$scope.datepickerOptions.minMode="month";
 				self.timeSlider = "month90Slider";
 				$translate('month90Slider').then(function (translation) {
 					self.nameTimeSlider = translation;
@@ -490,7 +527,8 @@ angular.module('rheticus')
 
 	//RESTART THE CURRENT LAYER WITH NEW TIME TYPE.
 	$scope.restart=function (type) {
-				//console.log("restart");
+				console.log("restart");
+				console.log($scope.datepickerOptions);
 				//RESET ALL
 				$scope.setOverlaysToType(type);
 				//CALCULATE NEW LAYER DIMENSION AND SET MAXSLIDER
@@ -514,6 +552,9 @@ angular.module('rheticus')
 					$scope.arrayDataTime=dimension;
 					$scope.filterWMSDate();
 					$scope.arrayDataTimeCurrent=$scope.arrayDataTime;
+					//UPDATE DATEPICKER MIN MAX DATE
+					$scope.datepickerOptions.minDate=$scope.arrayDataTimeCurrent[0];
+					$scope.datepickerOptions.maxDate=$scope.arrayDataTimeCurrent[$scope.arrayDataTimeCurrent.length-1];
 					//TIMEOUT NEEDED BECAUSE SYNC CHANGE OF currentDate AND MAXSLIDER GENERATE ERROR
 					$timeout(function () {
 						$scope.currentDate=parseInt(i-1);

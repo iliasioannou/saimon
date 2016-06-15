@@ -121,8 +121,8 @@ result = os.listdir(wqm10OutLocalDir)]]></scripting:script>
             <component class="it.planetek.saimon.zip.DownloadZipCreator" doc:name="DownloadZipCreator"/>
             <set-variable variableName="Prod_Download" value="#[payload]" doc:name="Prod_Download"/>
             <logger message="Download Url: #[Prod_Download]" level="INFO" doc:name="Download Url"/>
-            <choice doc:name="Thematic?">
-                <when expression="#[noextFileName.split(&quot;_&quot;)[5] == &quot;Thematic&quot;]">
+            <choice doc:name="Numeric?">
+                <when expression="#[noextFileName.split(&quot;_&quot;)[5] == &quot;Num&quot;]">
                     <logger message="Load file in Geoserver: #[fileName]" level="INFO" doc:name="Load file in Geoserver"/>
                     <expression-component doc:name="Set payload geoserverReq HashMap"><![CDATA[payload = new java.util.HashMap();
 payload.put("coveragestoreName", coverageName );
@@ -134,7 +134,7 @@ return payload;
                     <flow-ref name="geoserverImageMosaicFlow" doc:name="geoserverImageMosaicFlow"/>
                 </when>
                 <otherwise>
-                    <logger message="#[fileName] is NOT Thematic, won't load in Geoserver" level="INFO" doc:name="No Thematic, No Geoserver"/>
+                    <logger message="#[fileName] is NOT Numeric, won't load in Geoserver" level="INFO" doc:name="Not Numeric, No Geoserver"/>
                 </otherwise>
             </choice>
 

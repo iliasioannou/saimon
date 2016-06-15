@@ -236,9 +236,7 @@ angular.module('rheticus')
 		 */
 		angular.extend($scope,{
 			// externalized scope variables for watchers
-			"iffi" : null, // IFFI overlay getFeatureInfoResponse
-			"sentinel" : null, // SENTINEL overlay getFeatureInfoResponse
-			"ps" : null, // PS overlay getFeatureInfoResponse
+			"overlayResponse" : null, // PS overlay getFeatureInfoResponse
 			"center" : $rootScope.configurationCurrentHost.map.center, // for scope watcher reasons because "ols moveend event" makes ols too slow!
 			// externalized scope methods for children controllers
 			"setController" : setController,
@@ -360,6 +358,92 @@ angular.module('rheticus')
 			}
 			return(olLayer);
 		};
+
+		olData.getMap().then(function (map) {
+			//singleclick event
+			map.on("singleclick", function (evt) {
+				$scope.$broadcast("setOverlaysClosure");
+				var point = ol.proj.toLonLat(evt.coordinate,configuration.map.view.projection); // jshint ignore:line
+				self.overlays.map(function(l) {
+					if (l./*active*/visible){
+						Flash.dismiss();
+						$translate('loadingResult').then(function (translatedValue) {
+								Flash.create("info", translatedValue); //for \""+getOverlayMetadata(l.id).legend.title+"\"
+						});
+						var params = {
+							"INFO_FORMAT" : "application/json",
+							"FEATURE_COUNT" : MAX_FEATURES,
+						};
+						getFeatureInfo(map,evt.coordinate,l,params,"overlayResponse",setMarker);
+
+
+					}
+				});
+
+			map.on("moveend", function (evt) { // jshint ignore:line
+				//pan or zoom event
+				$scope.$broadcast("setOverlaysClosure");
+			});
+		});
+	});
+
+
+		var getFeatureInfo = function(map,coordinate,olLayer,olParams,resultObj,callback){
+			getFeatureInfoPoint = ol.proj.toLonLat(coordinate,configuration.map.view.projection); // jshint ignore:line
+			var viewResolution = map.getView().getResolution();
+			var wms = eval("new ol.source."+olLayer.source.type+"(olLayer.source);"); // jshint ignore:line
+			var url = wms.getGetFeatureInfoUrl(coordinate,viewResolution,configuration.map.view.projection,olParams);
+			//console.log(url);
+			if (url) {
+				var that = $scope; // jshint ignore:line
+				$http.get(url)
+					.success(function(response, status, headers, config) {
+
+
+						var params = null;
+
+						var contentType = headers('Content-Type');
+						if (contentType.indexOf("/xml")!==-1){
+							var xmlDoc = $.parseXML( response );
+							var xml = $( xmlDoc );
+							var dateString = xml.find("ServiceExceptionReport")
+							Flash.create('danger', "Layer \""+olLayer.name+"\" returned an error!!");
+							return;
+						}
+
+						if (response.features && response.features.length===0){ //HTTP STATUS == 200 -- no features returned or "ServiceException"
+							//console.log("no features");
+							//Flash.create('warning', "Layer \""+olLayer.name+"\" returned no features!");
+								$translate('noResult').then(function (translatedValue) {
+										Flash.create('warning', translatedValue);
+								});
+						} else {
+							Flash.dismiss();
+							var obj = {
+								"point" : ol.proj.toLonLat(coordinate,configuration.map.view.projection), // jshint ignore:line
+								"features" : (response.features.length>0) ? response.features : null,
+								"unit": olLayer.unit
+							};
+							if (resultObj!==""){
+								eval("that."+resultObj+" = obj;"); // jshint ignore:line
+							}
+							if ((callback!==undefined) && (typeof callback==="function")){
+								callback(obj);
+							}
+						}
+					})
+					.error(function (response) {// jshint ignore:line
+						//HTTP STATUS != 200
+						Flash.create('danger', "Layer \""+olLayer.name+"\" returned an error!!");
+					});
+			} else {
+				console.log("[main-controller :: getFeatureInfo] URL undefined!");
+			}
+		};
+
+
+
+
 
 		//User deals management
 		var setUserDeals = function(info){

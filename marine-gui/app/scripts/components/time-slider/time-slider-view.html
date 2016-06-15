@@ -4,39 +4,39 @@
 
   <div hide-xs class="timeSlider">
     <md-item-content layout="row" layout-align="center center" style="margin-left:60px">
-      <span id="currentTimeSlider" style="font-weight:bold;margin-right:80px;margin-top:20px"></span>
+      <span ng-click="timeSlider.showCalendarView()" style="font-weight:bold;margin-right:80px;margin-top:20px">{{timeSlider.currentTimeSlider}}</span>
       <md-slider id="slider" flex="" step="1" min="{{timeSlider.minSlider}}" max="{{timeSlider.maxSlider}}" ng-model="currentDate" aria-label="red"  class="md-primary">
       </md-slider>
       <md-menu >
           <md-button style="margin-left:15px;" aria-label="{{ 'optionsSlider' | translate }}" title="{{ 'optionsSlider' | translate }}" class="md-icon-button" ng-click="$mdOpenMenu($event)">
-            <img  src="images/icons/list.png" alt="Logo" width="25" height="25" style="cursor: pointer;" ng-click="">
+            <img id="listTypeButton" src="images/icons/1.png" alt="Logo" width="32" height="32" style="cursor: pointer;margin:-5px" ng-click="">
           </md-button>
           <md-menu-content width="4">
-            <div layout="row" layout-align="center" style="background-color:#003a57;">
-              <h2 style="font-size:15px;font-weight:bold;color:#ffffff;">{{ 'periodSlider' | translate }} {{limitDate}}</h2>
+            <div layout="row" layout-align="center center" style="background-color:#003a57;">
+              <p style="margin:13px; font-size:15px;font-weight:bold;color:#ffffff;">{{ 'periodSlider' | translate }} {{limitDate}}</p>
             </div>
-            <md-menu-item >
+            <md-menu-item id="dailyItem" title="{{ 'dailyItemUpdate' | translate }} {{limitDate1}}">
               <md-button ng-click="dailySlider()">
                   <div layout="row">
                     <p flex="">{{ 'dailySlider' | translate }}</p>
                   </div>
               </md-button>
             </md-menu-item>
-            <md-menu-item >
+            <md-menu-item id="tenItem" title="{{ 'tenItemUpdate' | translate }} {{limitDate10}}">
               <md-button ng-click="tenDaysSlider()">
                   <div layout="row">
                     <p flex="">{{ 'tenDaysSlider' | translate }}</p>
                   </div>
               </md-button>
             </md-menu-item>
-            <md-menu-item >
+            <md-menu-item id="monthlyItem" title="{{ 'monthlyItemUpdate' | translate }} {{limitDate30}}">
               <md-button ng-click="monthSlider()">
                   <div layout="row">
                     <p flex="">{{ 'monthSlider' | translate }}</p>
                   </div>
               </md-button>
             </md-menu-item>
-            <md-menu-item >
+            <md-menu-item id="monthly90Item" title="{{ 'monthly90ItemUpdate' | translate }} {{limitDate30P}}">
               <md-button ng-click="month90Slider()">
                   <div layout="row">
                     <p flex="">{{ 'month90Slider' | translate }}</p>
@@ -47,17 +47,90 @@
           </md-menu-content>
         </md-menu>
     </md-item-content>
-  <div>
+  </div>
 
-    <div class="timeSliderPlayer">
+    <div hide-xs class="timeSliderPlayer">
       <div style="margin-top:15px">
         <md-item-content layout="row" layout-align="center center">
           <img src="images/icons/rewind.png" alt="Logo" width="36" height="36" style="cursor: pointer;" ng-click="rewindSlider()">
           <img id="playButton" src="images/icons/play.png" alt="Logo" width="50" height="50" style="margin-left:5px;margin-right:5px;cursor: pointer;" ng-click="playSlider()">
           <img src="images/icons/forward.png" alt="Logo" width="36" height="36" style="cursor: pointer;" ng-click="forwardSlider()">
         </md-item-content>
-      <div>
-    <div>
+      </div>
+    </div>
 
 
-<div>
+    <div class="currentView">
+  		<div style="margin:5px;">
+        <span style="margin-top:5px;color:#ffffff;">{{'Type'|translate}}: </span>
+  			<span id="currentTypeName"style="color:#ffffff;">{{timeSlider.currentTypeName}}</span>
+        <br>
+        <span style="margin-top:5px;color:#ffffff;">{{'Mode'|translate}}: </span>
+  			<span id="nameTimeSlider"style="color:#ffffff;">{{timeSlider.nameTimeSlider}}</span>
+        <br>
+        <span style="margin-top:5px;color:#ffffff;">{{'Date'|translate}}: </span>
+        <span id="currentTimeSlider"style="color:#ffffff;">{{timeSlider.currentTimeSlider}}</span>
+  		</div>
+  	</div>
+
+
+    <div hide-gt-xs class="timeSliderPlayerMin">
+        <md-item-content layout="row" layout-align="center center">
+          <img src="images/icons/rewind.png" alt="Logo" width="36" height="36" style="cursor: pointer;" ng-click="rewindSlider()">
+          <img id="playButtonMin" src="images/icons/play.png" alt="Logo" width="50" height="50" style="margin-left:5px;margin-right:5px;cursor: pointer;" ng-click="playSlider()">
+          <img src="images/icons/forward.png" alt="Logo" width="36" height="36" style="cursor: pointer;" ng-click="forwardSlider()">
+          <md-menu >
+              <md-button aria-label="{{ 'optionsSlider' | translate }}" title="{{ 'optionsSlider' | translate }}" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+                <img id="listTypeButtonMin" src="images/icons/1.png" alt="Logo" width="32" height="32" style="cursor: pointer;margin:-5px" ng-click="">
+              </md-button>
+              <md-menu-content width="4">
+                <div layout="row" layout-align="center center" style="background-color:#003a57;">
+                  <p style="margin:13px; font-size:15px;font-weight:bold;color:#ffffff;">{{ 'periodSlider' | translate }} {{limitDate}}</p>
+                </div>
+                <md-menu-item id="dailyItem" title="{{ 'dailyItemUpdate' | translate }} {{limitDate1}}">
+                  <md-button ng-click="dailySlider()">
+                      <div layout="row">
+                        <p flex="">{{ 'dailySlider' | translate }}</p>
+                      </div>
+                  </md-button>
+                </md-menu-item>
+                <md-menu-item id="tenItem" title="{{ 'tenItemUpdate' | translate }} {{limitDate10}}">
+                  <md-button ng-click="tenDaysSlider()">
+                      <div layout="row">
+                        <p flex="">{{ 'tenDaysSlider' | translate }}</p>
+                      </div>
+                  </md-button>
+                </md-menu-item>
+                <md-menu-item id="monthlyItem" title="{{ 'monthlyItemUpdate' | translate }} {{limitDate30}}">
+                  <md-button ng-click="monthSlider()">
+                      <div layout="row">
+                        <p flex="">{{ 'monthSlider' | translate }}</p>
+                      </div>
+                  </md-button>
+                </md-menu-item>
+                <md-menu-item id="monthly90Item" title="{{ 'monthly90ItemUpdate' | translate }} {{limitDate30P}}">
+                  <md-button ng-click="month90Slider()">
+                      <div layout="row">
+                        <p flex="">{{ 'month90Slider' | translate }}</p>
+                      </div>
+                  </md-button>
+                </md-menu-item>
+
+              </md-menu-content>
+            </md-menu>
+        </md-item-content>
+    </div>
+
+    <div hide-xs ng-show="timeSlider.showCalendar" class="calendarSliderPlayer">
+      <md-toolbar>
+        <div class="md-toolbar-tools">
+          <span flex></span>
+          <h2>{{ 'selectDate' | translate }}</h2>
+          <span flex=""></span>
+          <a class="close" ng-click="timeSlider.showCalendarView()">&times;</a>
+        </div>
+      </md-toolbar>
+      <uib-datepicker ng-model="datePicker"  datepicker-options="datepickerOptions" ></uib-datepicker>
+    </div>
+
+</div>

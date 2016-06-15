@@ -13,8 +13,16 @@ angular.module('rheticus')
 		$scope.myDateMax = new Date();
 		$scope.myDateMin = new Date();
 		$scope.limitDate = "";
+		$scope.limitDate1 = "";
+		$scope.limitDate10 = "";
+		$scope.limitDate30 = "";
+		$scope.limitDate30P = "";
     $scope.currentDate=0;
 		$scope.layerFound=[];
+		$scope.datepickerOptions = {
+	    "showWeeks": true,
+			"minDate":new Date()
+	  };
 		//WATCH ALL OVERLAYS
 		$scope.overlayForWatch = $scope.getOverlays();
 
@@ -26,20 +34,73 @@ angular.module('rheticus')
 				"wt" : $scope.getOverlayParams("wt"),
 				"maxSlider": 0,
 				"minSlider": 0,
-				"timeSlider": "dailySlider"
+				"nameTimeSlider": "",
+				"timeSlider": "dailySlider",
+				"currentDateFormat": "",
+				"currentType":"chl",
+				"currentTypeName":"",
+				"showCalendar":false,
+				"showCalendarView":function () {
+					self.showCalendar=!self.showCalendar;
+				}
 		});
+
+		//UPDATE CURRENTVIEW TRANSLATIONS WHEN CLICK NEW LANGUAGE
+			$rootScope.$on('$translateChangeSuccess', function (){
+				$rootScope.$broadcast("setOverlaysClosure");
+				$translate(self.timeSlider).then(function (translation) {
+					self.nameTimeSlider = translation;
+				});
+				$translate(self.currentType).then(function (translation) {
+					self.currentTypeName = translation;
+				});
+	    });
+
+		//INITIALIZE CURRENTVIEW
+			$translate('dailySlider').then(function (translation) {
+				self.nameTimeSlider = translation;
+			});
+			$translate('chl').then(function (translation) {
+				self.currentTypeName = translation;
+			});
 
 
 	//update values on login change status
 	$rootScope.$watch("login.details", function () {
 			$scope.statusSlider=false;
 			document.getElementById('playButton').src="images/icons/play.png";
+			document.getElementById('playButtonMin').src="images/icons/play.png";
 			$scope.currentDate=0;
 	  	$scope.getMinMaxDateDeals();
 			$scope.getDateFromCapabilities("CHL");
 			$scope.countMin=false;
 			$scope.countMax=false;
 	});
+
+	$scope.$watch("datePicker",function(value){
+			if(value){
+				var i =0;
+				var found=false;
+				console.log("time"+value);
+				while (i < $scope.arrayDataTimeCurrent.length && !found) {
+					console.log($scope.arrayDataTimeCurrent[i]);
+					if(value<=$scope.arrayDataTimeCurrent[i]){
+						found=true;
+						$scope.currentDate=i;
+						console.log("trovato: "+i);
+					}
+					i++;
+				}
+				if(!found){
+					$translate("noData").then(function (translation) {
+						Flash.create("warning", translation);
+					});
+				}
+			}
+
+
+	});
+
 
 	//WATCH SST
 	$scope.$watch("overlayForWatch[0].visible",function(value){
@@ -51,10 +112,16 @@ angular.module('rheticus')
 			while(i<$scope.layerFound.length && !trovato){
 				if ($scope.layerFound[i].Name==="SST"){
 					trovato=true;
-					$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[0])+"-"+d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
+					$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
 				}
 				i++;
 			}
+			self.currentType='sst',
+			$translate('sst').then(function (translation) {
+				self.currentTypeName = translation;
+			});
+			//UPDATE ALL LAST DATE MENU
+			$scope.updateMenuDate("SST");
 			//RESTART WITH CURRENT TYPE
 			$scope.restart(self.timeSlider);
 		}
@@ -63,17 +130,23 @@ angular.module('rheticus')
 	//WATCH WT
 	$scope.$watch("overlayForWatch[1].visible",function(value){
 			if (value && $scope.layerFound.length>0){
-			console.log("attivo WT: "+$scope.overlayForWatch[1].source.params.LAYERS);
+			//console.log("attivo WT: "+$scope.overlayForWatch[1].source.params.LAYERS);
 			//SET MENU PERIOD
 			var i =0;
 			var trovato=false;
 			while(i<$scope.layerFound.length && !trovato){
 				if ($scope.layerFound[i].Name==="WT"){
 					trovato=true;
-					$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[0])+"-"+d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
+					$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
 				}
 				i++;
 			}
+			self.currentType='wt',
+			$translate('wt').then(function (translation) {
+				self.currentTypeName = translation;
+			});
+			//UPDATE ALL LAST DATE MENU
+			$scope.updateMenuDate("WT");
 			//RESTART WITH CURRENT TYPE
 			$scope.restart(self.timeSlider);
 		}
@@ -82,17 +155,23 @@ angular.module('rheticus')
 	//WATCH CHL
 	$scope.$watch("overlayForWatch[2].visible",function(value){
 		if (value && $scope.layerFound.length>0){
-			console.log("attivo CHL: "+$scope.overlayForWatch[2].source.params.LAYERS);
+			//console.log("attivo CHL: "+$scope.overlayForWatch[2].source.params.LAYERS);
 			//SET MENU PERIOD
 			var i =0;
 			var trovato=false;
 			while(i<$scope.layerFound.length && !trovato){
 				if ($scope.layerFound[i].Name==="CHL"){
 					trovato=true;
-					$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[0])+"-"+d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
+					$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
 				}
 				i++;
 			}
+			self.currentType='chl',
+			$translate('chl').then(function (translation) {
+				self.currentTypeName = translation;
+			});
+			//UPDATE ALL LAST DATE MENU
+			$scope.updateMenuDate("CHL");
 			//RESTART WITH CURRENT TYPE
 			$scope.restart(self.timeSlider);
 		}
@@ -100,12 +179,33 @@ angular.module('rheticus')
 	});
 
 	//WATCH CURRENTDATE (MODEL SLIDER) AND UPDATE INTERFACE
-  $scope.$watch("currentDate",function(currentDate){
+  $scope.$watch("currentDate",function(nameLayer){
       if($scope.arrayDataTimeCurrent){
         $scope.setSlider();
       }
 
 	});
+	//UPDATE MENU DATE WHEN CHANGING LAYER
+	$scope.updateMenuDate = function (nameLayer) {
+		var find=false;
+	  var i=0;
+		while(i<$scope.layerFound.length && !find){
+			var time=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
+			if($scope.layerFound[i].Name===nameLayer){
+				$scope.limitDate1=time;
+			}else if ($scope.layerFound[i].Name.indexOf(nameLayer+"10")>-1) {
+				$scope.limitDate10=time;
+			}
+			else if ($scope.layerFound[i].Name.indexOf(nameLayer+"30")>-1 && $scope.layerFound[i].Name.indexOf("P")===-1) {
+				$scope.limitDate30=time;
+			}
+			else if ($scope.layerFound[i].Name.indexOf(nameLayer+"30P")>-1) {
+				$scope.limitDate30P=time;
+				find=true;
+			}
+			i++;
+		}
+	}
 
 
 	//CALL GET CAPABILITIES AND WITH JQUERY EXTRACT AN ARRAY WITH ALL LAYER NAME AND DIMENSIONS
@@ -147,22 +247,34 @@ angular.module('rheticus')
 							});
 						}
 					}
-					console.log($scope.layerFound);
+					//console.log($scope.layerFound);
 					var find=false;
 					i=0;
 					while(i<$scope.layerFound.length && !find){
+						var time=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
 						if($scope.layerFound[i].Name===nameLayer){
-							find=true;
-							console.log("Found"+$scope.layerFound[i].Name);
+							//console.log("Found"+$scope.layerFound[i].Name);
 							//RESET ALL
-							$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[0])+"-"+d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
-							console.log($scope.limitDate);
+							$scope.limitDate=d3.time.format("%d/%m/%Y")($scope.layerFound[i].Dimension[$scope.layerFound[i].Dimension.length-1]);
+							//console.log($scope.limitDate);
 							$scope.currentDate=0;
 							document.getElementById('playButton').src="images/icons/play.png";
+							document.getElementById('playButtonMin').src="images/icons/play.png";
 							$scope.arrayDataTime=$scope.layerFound[i].Dimension;
 							$scope.filterWMSDate();
 							$scope.arrayDataTimeCurrent=$scope.arrayDataTime;
 							$scope.setSlider();
+							$scope.limitDate1=time;
+
+						}else if ($scope.layerFound[i].Name.indexOf(nameLayer+"10")>-1) {
+							$scope.limitDate10=time;
+						}
+						else if ($scope.layerFound[i].Name.indexOf(nameLayer+"30")>-1 && $scope.layerFound[i].Name.indexOf("P")===-1) {
+							$scope.limitDate30=time;
+						}
+						else if ($scope.layerFound[i].Name.indexOf(nameLayer+"30P")>-1) {
+							$scope.limitDate30P=time;
+							find=true;
 						}
 						i++;
 					}
@@ -205,11 +317,10 @@ angular.module('rheticus')
 				$scope.arrayDataTime=correctDate;
 				if(correctDate.length!==0){
 	        self.maxSlider=$scope.arrayDataTime.length-1;
-					//console.log(d3.time.format("%d/%m/%Y")($scope.arrayDataTime[0]));
-					document.getElementById('currentTimeSlider').innerHTML=d3.time.format("%d/%m/%Y")($scope.arrayDataTime[0]);
+					self.currentTimeSlider=d3.time.format("%d/%m/%Y")($scope.arrayDataTime[0]);
 				}else{
 	        self.maxSlider=0;
-					document.getElementById('currentTimeSlider').innerHTML="";
+					self.currentTimeSlider="";
 				}
 		};
 
@@ -218,13 +329,11 @@ angular.module('rheticus')
 	$scope.statusSlider=false;
 	$scope.loopSlider= function() {
 			if($scope.statusSlider){
-				console.log("startLoop");
+				//console.log("startLoop");
 				if($scope.currentDate<$scope.arrayDataTimeCurrent.length-1){
 					$scope.currentDate++;
 					$scope.setSlider();
 					$timeout($scope.loopSlider, 3000);
-				}else{
-					document.getElementById('playButton').src="images/icons/stop.png";
 				}
 			}
 	}
@@ -232,24 +341,27 @@ angular.module('rheticus')
 
 	//START SLIDER PLAY AND CHANGE INTERFACE
 	$scope.playSlider= function() {
-			if(document.getElementById('playButton').src.indexOf("play.png")>-1){
+			if(document.getElementById('playButton').src.indexOf("play.png")>-1 && document.getElementById('playButtonMin').src.indexOf("play.png")>-1){
 				document.getElementById('playButton').src="images/icons/pause.png";
+				document.getElementById('playButtonMin').src="images/icons/pause.png";
 				$scope.statusSlider=true;
 				$timeout($scope.loopSlider, 500);
-			}else if(document.getElementById('playButton').src.indexOf("pause.png")>-1){
+			}else if(document.getElementById('playButton').src.indexOf("pause.png")>-1 && document.getElementById('playButtonMin').src.indexOf("pause.png")>-1){
 				$scope.statusSlider=false;
 				$timeout($scope.loopSlider, 500);
 				document.getElementById('playButton').src="images/icons/play.png";
+				document.getElementById('playButtonMin').src="images/icons/play.png";
 			}else {
 				$scope.currentDate=0;
 				if($scope.arrayDataTimeCurrent[$scope.currentDate]!==undefined){
-					document.getElementById('currentTimeSlider').innerHTML=d3.time.format("%d/%m/%Y")($scope.arrayDataTimeCurrent[$scope.currentDate]);
+					self.currentTimeSlider=d3.time.format("%d/%m/%Y")($scope.arrayDataTimeCurrent[$scope.currentDate]);
 				}else{
-					document.getElementById('currentTimeSlider').innerHTML="";
+					self.currentTimeSlider="";
 				}
 				$scope.statusSlider=false;
 				$timeout($scope.loopSlider, 500);
 				document.getElementById('playButton').src="images/icons/play.png";
+				document.getElementById('playButtonMin').src="images/icons/play.png";
 			}
 	};
 
@@ -276,44 +388,71 @@ angular.module('rheticus')
 	//UPDATE INTERFACE WITH THE CURRENT DATE AND UPDATE TIME PARAMS IN ALL OVERLAYS
   $scope.setSlider= function() {
 				//console.log("setSlider");
+				$rootScope.$broadcast("setOverlaysClosure");
 				self.chl.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
 				self.sst.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
 				self.wt.source.params.TIME=d3.time.format("%Y-%m-%d")($scope.arrayDataTimeCurrent[$scope.currentDate]);
 				if($scope.arrayDataTimeCurrent[$scope.currentDate]!==undefined){
-					document.getElementById('currentTimeSlider').innerHTML=d3.time.format("%d/%m/%Y")($scope.arrayDataTimeCurrent[$scope.currentDate]);
-					if(document.getElementById('playButton').src.indexOf("images/icons/stop.png")>-1){
+					self.currentTimeSlider=d3.time.format("%d/%m/%Y")($scope.arrayDataTimeCurrent[$scope.currentDate]);
+					if(document.getElementById('playButton').src.indexOf("images/icons/stop.png")>-1 && document.getElementById('playButtonMin').src.indexOf("images/icons/stop.png")>-1){
 						document.getElementById('playButton').src="images/icons/play.png";
+						document.getElementById('playButtonMin').src="images/icons/play.png";
+					}
+					if($scope.currentDate===$scope.arrayDataTimeCurrent.length-1){
+						document.getElementById('playButton').src="images/icons/stop.png";
+						document.getElementById('playButtonMin').src="images/icons/stop.png";
 					}
 				}else{
-					document.getElementById('currentTimeSlider').innerHTML="";
+					self.currentTimeSlider="";
 				}
 	};
 
  //THIS FUNCTIONS ARE CALLED BY TIME TYPE CHANGE.
 	$scope.dailySlider=function () {
 				self.timeSlider = "dailySlider";
+				$translate('dailySlider').then(function (translation) {
+					self.nameTimeSlider = translation;
+				});
+
 				$scope.restart("dailySlider");
+				document.getElementById('listTypeButton').src="images/icons/1.png"
+				document.getElementById('listTypeButtonMin').src="images/icons/1.png"
 	};
 
 	$scope.tenDaysSlider=function () {
 				self.timeSlider = "tenDaysSlider";
+				$translate('tenDaysSlider').then(function (translation) {
+					self.nameTimeSlider = translation;
+				});
 				$scope.restart("tenDaysSlider");
+				document.getElementById('listTypeButton').src="images/icons/10.png"
+				document.getElementById('listTypeButtonMin').src="images/icons/10.png"
 	};
 
 	$scope.monthSlider=function () {
 				self.timeSlider = "monthSlider";
+				$translate('monthSlider').then(function (translation) {
+					self.nameTimeSlider = translation;
+				});
 				$scope.restart("monthSlider");
+				document.getElementById('listTypeButton').src="images/icons/30.png"
+				document.getElementById('listTypeButtonMin').src="images/icons/30.png"
 	};
 
 	$scope.month90Slider=function () {
 				self.timeSlider = "month90Slider";
+				$translate('month90Slider').then(function (translation) {
+					self.nameTimeSlider = translation;
+				});
 				$scope.restart("month90Slider");
+				document.getElementById('listTypeButton').src="images/icons/30p.png"
+				document.getElementById('listTypeButtonMin').src="images/icons/30p.png"
 	};
 
 	//CREATE ARRAY WITH NAME LAYERS AND CORRISPECTIVE TIME DIMENSION
 	$scope.getDimensionAfterCapabilities= function () {
 				var currentOverlay=$scope.getCurrentCategory();
-				console.log(currentOverlay);
+				//console.log(currentOverlay);
 				var i =0;
 				var trovato=false;
 				while(i<$scope.layerFound.length && !trovato){
@@ -324,7 +463,7 @@ angular.module('rheticus')
 				}
 
 				if(trovato){
-					console.log($scope.layerFound[i-1].Dimension);
+					//console.log($scope.layerFound[i-1].Dimension);
 					return $scope.layerFound[i-1].Dimension;
 				}else{
 					return [];
@@ -351,7 +490,7 @@ angular.module('rheticus')
 
 	//RESTART THE CURRENT LAYER WITH NEW TIME TYPE.
 	$scope.restart=function (type) {
-				console.log("restart");
+				//console.log("restart");
 				//RESET ALL
 				$scope.setOverlaysToType(type);
 				//CALCULATE NEW LAYER DIMENSION AND SET MAXSLIDER
@@ -371,6 +510,7 @@ angular.module('rheticus')
 					}
 					//FILTER DATE BY USER CONTRACT AND RESET INTERFACE
 					document.getElementById('playButton').src="images/icons/play.png";
+					document.getElementById('playButtonMin').src="images/icons/play.png";
 					$scope.arrayDataTime=dimension;
 					$scope.filterWMSDate();
 					$scope.arrayDataTimeCurrent=$scope.arrayDataTime;
@@ -388,7 +528,7 @@ angular.module('rheticus')
 
 	//SET ALL LAYERS TO THE INPUT TYPE USING MAPPING IN COMMON.JS
 	$scope.setOverlaysToType=function (type) {
-				console.log("setOverlaysToType with type:"+type);
+				//console.log("setOverlaysToType with type:"+type);
 				var overlays=$scope.getOverlays();
 				for (var i=0;i<overlays.length;i++){
 					eval("overlays[i].source.params.LAYERS=configuration."+overlays[i].name+"."+type); // jshint ignore:line
@@ -401,7 +541,7 @@ angular.module('rheticus')
 					var layers = map.getLayers();
 	        layers.forEach(function(layer) {
 	          if (layer.get('name') === 'Overlays') {
-							console.log((layer.getLayers().getArray())[2].get('name'));
+							//console.log((layer.getLayers().getArray())[2].get('name'));
 									for (var i = 0; i < (layer.getLayers().getArray()).length; i++) {
 											if((layer.getLayers().getArray())[i].get('name')==='SST' || (layer.getLayers().getArray())[i].get('name')==='WT' || (layer.getLayers().getArray())[i].get('name')==='CHL'){
 												var source=(layer.getLayers().getArray())[i].getSource();

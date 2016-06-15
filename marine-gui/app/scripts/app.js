@@ -20,7 +20,11 @@ angular
 		'ngRoute',
 		'ngSanitize',
 		'openlayers-directive',
+		'openlayers-layerswitcher',
 		'ui.bootstrap',
+		'angularAwesomeSlider',
+		'nvd3',
+		'smart-table',
     'services.config',
 		'flash',
 		'pascalprecht.translate'

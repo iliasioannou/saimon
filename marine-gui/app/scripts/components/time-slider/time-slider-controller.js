@@ -19,8 +19,9 @@ angular.module('rheticus')
 		$scope.limitDate30P = "";
     $scope.currentDate=0;
 		$scope.layerFound=[];
-		$scope.pickerOptions = {
-	    "showWeeks": false
+		$scope.datepickerOptions = {
+	    "showWeeks": true,
+			"minDate":new Date()
 	  };
 		//WATCH ALL OVERLAYS
 		$scope.overlayForWatch = $scope.getOverlays();

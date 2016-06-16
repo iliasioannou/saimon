@@ -574,15 +574,20 @@ angular.module('rheticus')
 		var dayToCheck = new Date(date);
 		dayToCheck.setHours(2,0,0,0);
 		var disabled=true;
-		if($scope.arrayDataTimeCurrent){
-				var i=0 ;
-				while (i < $scope.arrayDataTimeCurrent.length && disabled) {
-					if(dayToCheck.getTime()==$scope.arrayDataTimeCurrent[i].getTime()){
-						disabled=false;
+		if(mode==="day"){
+			if($scope.arrayDataTimeCurrent){
+					var i=0 ;
+					while (i < $scope.arrayDataTimeCurrent.length && disabled) {
+						if(dayToCheck.getTime()==$scope.arrayDataTimeCurrent[i].getTime()){
+							disabled=false;
+						}
+						i++;
 					}
-					i++;
-				}
+			}
+		}else{
+			disabled=false;
 		}
+
 		return disabled;
 	}
 

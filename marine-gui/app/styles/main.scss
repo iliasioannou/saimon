@@ -357,12 +357,13 @@ md-menu-content {
   z-index: 1;
 }
 
-
+//DATEPICKER BOOTSTRAP
 .foundedProductPickerFound button span {
-  background-color: limegreen;
+  background-color: #0AC76B;
   border-radius: 32px;
   color: black;
 }
+
 
 
 
@@ -552,9 +553,6 @@ table.gridtable td {
     top: 2.25em !important;
 }
 
-.btn.active {
-    background-color: #ff0000 !important;
-}
 
 .flashMessage {
 	position: absolute;

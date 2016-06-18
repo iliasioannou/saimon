@@ -8,8 +8,10 @@ angular.module('rheticus')
       Flash.create("success", "Lingua cambiata con successo.");
     }else if(langKey==="gr"){
       Flash.create("success", "Γλώσσα άλλαξε με επιτυχία.");
-    }else{
+    }else if(langKey==="en"){
       Flash.create("success", "Language changed successfully.");
+    }else{
+      Flash.create("success", "Language changed successfully.(to be translated in albanian)");
     }
     $translate.use(langKey);
 

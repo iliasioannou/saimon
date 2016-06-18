@@ -176,6 +176,58 @@
     'FOO': 'This is a paragraph'
   });
 
+  $translateProvider.translations('al', {
+    'language':'Gjuha',
+    'itFlag':'Italian',
+    'enFlag':'Anglisht',
+    'grFlag':'Grek',
+    'arFlag':'Arab',
+    'frFlag':'Francez',
+    'alFlag':'Shqiptar',
+    'titleToolbar':'Detar',
+    'welcomeLogin':'Mirλsevini',
+    'userLogin':'Pλrdoruesi',
+    'passwordLogin':'Fjalλkalim',
+    'buttonOnLogin':'Hyrje',
+    'buttonOffLogin':'Dalje',
+    'errorLogin':'I pa autorizuar !!!',
+    'statusLogin':'Keni hyrλ si:',
+    'accountToolbar':'Llogaria',
+    'geocoderToolbar':'Kλrkim',
+    'geocoderPlaceholder':'Kλrkim ...',
+    'myAreasToolbar':'Zona ime',
+    'filtersToolbar':'Filtra',
+    'titleFilters': 'Filtra tλ pλrparuar tλ hartλs detare',
+    'helpFilters':'Ju lutem pλrzgjidhni gamλn e dλshiruar',
+    'dataProvidersFilters':'Ofruesit e tλ dhλnave',
+    'settingsToolbar':'Rregullimet',
+    'basemapSettings':'Harta bazλ',
+    'categoriesTitleSettings': 'Kategoritλ e cilλsisλ sλ ujit',
+    'loadingResult':'Ngarkimi i Rezultateve...',
+    'noResult':'Nuk ka gjetur rezultat...',
+    "openSettings":"Opsione",
+    "trasparence":"Transparenca",
+    "chl":"Krolorofila",
+    "sst":"Temperatura e Sipλrfaqes sλ Ujit",
+    "wt":"Transparenca e Ujit",
+    'currentTime':'Data aktuale: ',
+    'CatalogSettings':'Katalogu',
+    'catalogHelpSettings':'Shko te kλrkimi i katalogut',
+    'helpSettings':'Ndihmλ',
+    'descriptionHelpSettings':'Shko te ndihma',
+    'optionsSlider':'Opsione',
+    'periodSlider':'Pλrditλsimi i fundit: ',
+    'dailySlider':'Ditor',
+    'tenDaysSlider':'10 ditor',
+    'monthSlider':'Mujor',
+    'month90Slider':'Monthly 90° percentile',
+    'dailyItemUpdate':'Pλrditλsimi ditor mλ i fundit: ',
+    'tenItemUpdate':'Pλrditλsimi dhjetλ ditor mλ i fundit: ',
+    'monthlyItemUpdate':'Pλrditλsimi mujor mλ i fundit: ',
+    'monthly90ItemUpdate':'Perditesimi i fundit mujor ne perqindje: ',
+    'FOO': 'Ky λshtλ paragraf'
+  });
+
   var determineCurrentLanguage= function () {
 
    var userLang = navigator.language || navigator.browserLanguage;
@@ -183,20 +235,16 @@
      userLang="it";
    }else if (userLang.indexOf("gr")>-1){
      userLang="gr";
-   }else{
+   }else if(userLang.indexOf("en")>-1){
      userLang="en";
+   }else{
+     userLang="al";
    }
    return userLang;
  };
 
-
   $translateProvider.useSanitizeValueStrategy(null);
   $translateProvider.preferredLanguage(determineCurrentLanguage());
-
-
-
-
-
 
 
   }]);
